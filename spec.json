@@ -1,0 +1,189 @@
+{
+  "width": 700,
+  "height": 0,
+  "signals": [
+    {
+      "name": "highlight",
+      "init": null,
+      "streams": [
+        {"type": "@sequence:mouseover",     "expr": "datum.sequenceId"},
+        {"type": "@sequence:mouseout",      "expr": "null"},
+        {"type": "@sequenceName:mouseover", "expr": "datum.sequenceId"},
+        {"type": "@sequenceName:mouseout",  "expr": "null"},
+        {"type": "@sequenceAxis:mouseover", "expr": "datum.sequenceId"},
+        {"type": "@sequenceAxis:mouseout",  "expr": "null"}
+      ]
+    }
+  ],
+  "data": [
+    {
+      "name": "alignment",
+      "format": {
+        "parse": {
+          "site": "integer"
+        }
+      },
+      "transform": [
+        { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
+        { "type": "facet", "groupby": "sequenceId" },
+        { "type": "rank" },
+        { "type": "formula", "field": "sequence", "expr": "datum.values[0].sequence" }
+      ]
+    },
+    {
+      "name": "reference",
+      "source": "alignment",
+      "transform": [
+        { "type": "filter", "test": "datum.sequence.isRef" },
+        { "type": "formula", "field": "length", "expr": "datum.sequence.seq.length" }
+      ]
+    },
+    {
+      "name": "sequences",
+      "source": "alignment",
+      "transform": [
+        { "type": "filter", "test": "!datum.sequence.isRef" }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "range": "width",
+      "round": true,
+      "domainMin": 1,
+      "domainMax": {"data": "reference", "field": "length"},
+      "zero": false
+    },
+    {
+      "name": "fill",
+      "type": "ordinal",
+      "domain": ["methylated", "unmethylated", "reference"],
+      "range": ["#333", "white", "green"]
+    }
+  ],
+  "marks": [
+    {
+      "name": "sequenceName",
+      "type": "text",
+      "from": {
+        "data": "sequences"
+      },
+      "properties": {
+        "update": {
+          "text": {"field": "sequenceId"},
+          "fill": [
+            {"value": "blue", "test": "highlight === datum.sequenceId"},
+            {"value": "#888"}
+          ],
+          "align": {"value": "left"},
+          "fontSize": {"value": 11},
+          "baseline": {"value": "middle"},
+          "x": {"field": {"group": "width"}, "offset": 10},
+          "y": {"field": "rank", "mult": 10, "offset": -10},
+          "dy": {"value": 2}
+        }
+      }
+    },
+    {
+      "name": "sequenceAxis",
+      "type": "rule",
+      "from": {
+        "data": "sequences"
+      },
+      "properties": {
+        "update": {
+          "x": {"value": 0},
+          "x2": {"field": {"group": "width"}},
+          "y": {"field": "rank", "mult": 10, "offset": -10},
+          "stroke": [
+            {"value": "blue", "test": "highlight === datum.sequenceId"},
+            {"value": "#888"}
+          ]
+        }
+      }
+    },
+    {
+      "name": "referenceName",
+      "type": "text",
+      "from": {
+        "data": "reference"
+      },
+      "properties": {
+        "update": {
+          "text": {"field": "sequenceId"},
+          "fill": {"value": "#888"},
+          "align": {"value": "left"},
+          "fontSize": {"value": 11},
+          "baseline": {"value": "bottom"},
+          "x": {"field": {"group": "width"}, "offset": 10},
+          "y": {"field": "rank", "mult": 10, "offset": -10}
+        }
+      }
+    },
+    {
+      "name": "referenceSites",
+      "type": "group",
+      "from": {
+        "data": "reference"
+      },
+      "properties": {
+        "update": {
+          "x": {"value": 0},
+          "y": {"field": "rank", "mult": 10, "offset": -10}
+        }
+      },
+      "marks": [
+        {
+          "type": "text",
+          "properties": {
+            "update": {
+              "text": {"field": "site"},
+              "fontSize": {"value": 11},
+              "fill": {"value": "#333"},
+              "align": {"value": "center"},
+              "baseline": {"value": "bottom"},
+              "x": {"field": "site", "scale": "x"},
+              "y": {"value": 0}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "sequence",
+      "type": "group",
+      "from": {
+        "data": "sequences"
+      },
+      "properties": {
+        "update": {
+          "x": {"value": 0},
+          "y": {"field": "rank", "mult": 10, "offset": -10}
+        }
+      },
+      "marks": [
+        {
+          "type": "symbol",
+          "properties": {
+            "update": {
+              "x": {"scale": "x", "field": "site"},
+              "y": {"value": 0},
+              "fill": [
+                {"value": "blue", "test": "highlight === datum.sequenceId && datum.status === 'methylated'"},
+                {"scale": "fill", "field": "status"}
+              ],
+              "stroke": [
+                {"value": "blue", "test": "highlight === datum.sequenceId"},
+                {"value": "#333"}
+              ],
+              "shape": {"value": "circle"},
+              "size": {"value": 50}
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
