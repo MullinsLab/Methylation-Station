@@ -1,16 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="methylation-station" ng-controller="app as app">
   <head>
     <meta charset="UTF-8">
     <title>Methylation Station</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="css/app.css" media="screen" type="text/css">
+    <link rel="icon" type="image/png" href="favicon.png">
   </head>
   <body>
-    <input type="file" id="file" onchange="handleFiles(this.files, this)">
-    <div id="viz"></div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col col-sm-12">
+          <h1>
+            Methylation Station
+            <small>All aboard for the CpG islands! 🏝</small>
+          </h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-sm-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <label class="btn btn-primary">
+                <span class="glyphicon glyphicon-open-file"></span>
+                Open an alignment
+                <input type="file" file-model
+                  file-name="app.alignment.name"
+                  file-data="app.alignment.fasta"
+                  file-data-as="Text">
+              </label>
+
+              <div class="actions" ng-cloak>
+                <a class="btn btn-success" target="_blank"
+                  download="{{ app.alignment.name }}.svg"
+                  ng-click="$event.target.href = !viz.rendered ? '' : viz.toURL()"
+                  ng-disabled="!viz.rendered">
+                  <span class="glyphicon glyphicon-picture"></span>
+                  Export image as SVG
+                </a>
+
+                <a class="btn btn-success" target="_blank"
+                  download="{{ app.alignment.name }}.csv"
+                  ng-click="$event.target.href = !app.alignment.cpgSites ? '' : app.dataToURL()"
+                  ng-disabled="!app.alignment.cpgSites">
+                  <span class="glyphicon glyphicon-list-alt"></span>
+                  Export data
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col col-sm-7" ng-if="!app.alignment.name">
+          <p>
+            Get started by loading a
+            <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">multiple-sequence
+            alignment</a> in <a href="https://en.wikipedia.org/wiki/FASTA_format">FASTA format</a>.
+          </p>
+
+          <p>
+            The first sequence in the alignment should be an (unconverted)
+            reference sequence.  The remaining sequences must be
+            <a href="https://en.wikipedia.org/wiki/Bisulfite_sequencing">bisulfite-converted</a>.
+          </p>
+
+          <p>
+            All sequences should read 5′ → 3′ left to right, so that
+            <a href="https://en.wikipedia.org/wiki/CpG_site">CpG sites</a>
+            appear as <tt>CG</tt>.
+          </p>
+
+          <p>
+            Sequence names must be unique within the alignment.
+          </p>
+        </div>
+        <div class="col col-sm-12">
+          <div ng-if="app.alignment.error" class="alert alert-danger" role="alert" ng-cloak>
+            😟 {{ app.alignment.error }}
+          </div>
+          <h4 ng-if="app.alignment.name" ng-cloak>{{ app.alignment.name }}</h4>
+          <methylation-viz
+            data="app.alignment.cpgSites"
+            rendered="viz.rendered"
+            to-url="viz.toURL">
+          </methylation-viz>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="https://vega.github.io/vega/d3.v3.min.js"></script>
   <script src="https://vega.github.io/vega/vega.js"></script>
-  <script src="js/app.js"></script>
+  <script src="https://vega.github.io/datalib/datalib.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+  <script src="js/alignment.js"></script>
+  <script src="js/fileModel.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/controller.js"></script>
+  <script src="js/directives.js"></script>
 </html>
 <!-- vi: set ts=2 sw=2 : -->

@@ -2,4 +2,40 @@ body {
   font-family: "Helvetica Neue", Helvetica, sans-serif;
   font-size: 16px;
   color: #444;
+
+  /* 40px - 15px (.container-fluid) = 25px */
+  padding-top: 40px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.col > h1:first-child,
+.col > h2:first-child,
+.col > h3:first-child,
+.col > h4:first-child,
+.col > h5:first-child {
+  margin-top: 0;
+}
+
+/* From https://docs.angularjs.org/api/ng/directive/ngCloak */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+h1 small {
+  font-size: 0.5em;
+  padding-left: 1em;
+}
+
+label input[type=file] {
+  display: none;
+}
+
+.actions {
+  display: inline-block;
+  margin-left: 40px;
+}
+
+svg text {
+  cursor: default;
 }
