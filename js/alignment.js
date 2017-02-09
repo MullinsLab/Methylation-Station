@@ -37,17 +37,32 @@ window.Alignment = {
   },
 
 
-  // Tally CpG sites and their methylation status from a set of
-  // multiply-aligned sequences.
+  // Alignments must have at least two sequences and use unique sequence names
   //
-  cpgSites: function(alignment) {
-    // Sanity check alignment before tallying data
+  assertValidAlignment: function(alignment) {
     if (alignment.length < 2) {
       throw "Alignment must contain at least two sequences " +
             "(a reference and a bisulfite-converted)";
     }
 
-    // XXX TODO: check that ids are unique
+    var duplicates =
+      dl.groupby('id')
+        .count()
+        .execute(alignment)
+        .filter(function(d){ return d.count > 1 });
+
+    if (duplicates.length) {
+      throw "The following sequence names were found more than once in the alignment: " +
+            duplicates.map(dl.accessor('id')).join(', ');
+    }
+  },
+
+
+  // Tally CpG sites and their methylation status from a set of
+  // multiply-aligned sequences.
+  //
+  cpgSites: function(alignment) {
+    this.assertValidAlignment(alignment);
 
     var reference = alignment[0];
     var sites     = alignment.map(function(sequence, index){
