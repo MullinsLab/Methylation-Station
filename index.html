@@ -52,12 +52,13 @@
         </div>
         <div class="col col-sm-7" ng-if="!app.alignment.name">
           <p>
-            Get started by loading a
-            <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">multiple-sequence
-            alignment</a> in <a href="https://en.wikipedia.org/wiki/FASTA_format">FASTA format</a>.
+            This app is for analyzing and visualizing DNA methylation data.
           </p>
 
           <p>
+            Get started by loading a
+            <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">multiple-sequence
+            alignment</a> in <a href="https://en.wikipedia.org/wiki/FASTA_format">FASTA format</a>.
             The first sequence in the alignment should be an (unconverted)
             reference sequence.  The remaining sequences must be
             <a href="https://en.wikipedia.org/wiki/Bisulfite_sequencing">bisulfite-converted</a>.
@@ -66,7 +67,9 @@
           <p>
             All sequences should read 5′ → 3′ left to right, so that
             <a href="https://en.wikipedia.org/wiki/CpG_site">CpG sites</a>
-            appear as <tt>CG</tt>.
+            appear as <tt>CG</tt> in your file.  Sequence contexts other than CpG,
+            <a href="https://en.wikipedia.org/wiki/DNA_methylation#In_plants">such
+            as those occurring in plants</a>, are not currently considered.
           </p>
 
           <p>
