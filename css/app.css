@@ -39,3 +39,7 @@ label input[type=file] {
 svg text {
   cursor: default;
 }
+
+svg line {
+  shape-rendering: crispEdges;
+}
