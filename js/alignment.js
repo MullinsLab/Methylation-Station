@@ -66,10 +66,6 @@ window.Alignment = {
 
     var reference = alignment[0];
     var sites     = alignment.map(function(sequence, index){
-
-      // Only the first sequence is the reference
-      sequence.isRef = index === 0;
-
       var CpG   = /[CT](?=G)/gi,
           sites = [],
           site;
@@ -86,7 +82,7 @@ window.Alignment = {
           continue;
 
         var status =
-          sequence.isRef  ?    "reference" :
+            index ===  0  ?    "reference" :
           siteNuc === 'C' ?   "methylated" :
           siteNuc === 'T' ? "unmethylated" :
                                       null ;

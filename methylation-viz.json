@@ -34,7 +34,7 @@
       "name": "reference",
       "source": "alignment",
       "transform": [
-        { "type": "filter", "test": "datum.sequence.isRef" },
+        { "type": "filter", "test": "datum.rank === 1" },
         { "type": "formula", "field": "length", "expr": "datum.sequence.seq.length" }
       ]
     },
@@ -42,7 +42,7 @@
       "name": "sequences",
       "source": "alignment",
       "transform": [
-        { "type": "filter", "test": "!datum.sequence.isRef" }
+        { "type": "filter", "test": "datum.rank > 1" }
       ]
     }
   ],
