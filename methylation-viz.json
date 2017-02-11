@@ -25,6 +25,7 @@
       },
       "transform": [
         { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
+        { "type": "filter", "test": "datum.status !== 'converted'" },
         { "type": "facet", "groupby": "sequenceId" },
         { "type": "rank" },
         { "type": "formula", "field": "sequence", "expr": "datum.values[0].sequence" }
@@ -59,8 +60,8 @@
     {
       "name": "fill",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "reference"],
-      "range": ["#333", "white", "green"]
+      "domain": ["methylated", "unmethylated", "unconverted"],
+      "range": ["#333", "white", "red"]
     }
   ],
   "marks": [
@@ -175,11 +176,15 @@
                 {"scale": "fill", "field": "status"}
               ],
               "stroke": [
+                {"field": "status", "scale": "fill", "test": "datum.status === 'unconverted'"},
                 {"value": "blue", "test": "highlight === datum.sequenceId"},
                 {"value": "#333"}
               ],
               "shape": {"value": "circle"},
-              "size": {"value": 50}
+              "size": [
+                {"value": 14, "test": "datum.status === 'unconverted'"},
+                {"value": 50}
+              ]
             }
           }
         }
