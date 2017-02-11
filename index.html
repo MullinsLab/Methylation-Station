@@ -80,7 +80,13 @@
           <div ng-if="app.error" class="alert alert-danger" role="alert" ng-cloak>
             😟 {{ app.error }}
           </div>
-          <h4 ng-if="app.fasta.name" ng-cloak>{{ app.fasta.name }}</h4>
+          <h4 ng-if="app.fasta.name" ng-cloak>
+            {{ app.fasta.name }}
+            <small ng-if="app.alignment" ng-cloak>
+              {{ app.alignment.sequences[0].seq.length | number }}bp alignment of
+              {{ app.alignment.sequences.length | number }} sequences
+            </small>
+          </h4>
           <methylation-viz
             data="app.alignment.analysisSites"
             rendered="viz.rendered"
