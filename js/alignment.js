@@ -1,8 +1,27 @@
-window.Alignment = {
+(function(){
+  'use strict';
+
+  window.Alignment = Alignment;
+
+  function Alignment(fasta, name) {
+    this.name = name;
+    this.sequences = this.parse(fasta);
+    this.assertValidAlignment();
+
+    this.cpgSites = this._cpgSites();
+
+    // Make some properties above read-only
+    ["sequences", "cpgSites"].forEach(function(prop) {
+      Object.defineProperty(this, prop, { writable: false });
+    }, this);
+
+    return this;
+  }
+
 
   // Parse a FASTA file
   //
-  parse: function(text) {
+  Alignment.prototype.parse = function(text) {
     var fasta = [],
         sequence;
 
@@ -34,13 +53,14 @@ window.Alignment = {
       fasta.push(sequence);
 
     return fasta;
-  },
+  };
 
 
-  // Alignments must have at least two sequences and use unique sequence names
+  // Alignments used for methylation purposes must have at least two sequences
+  // and use unique sequence names
   //
-  assertValidAlignment: function(alignment) {
-    if (alignment.length < 2) {
+  Alignment.prototype.assertValidAlignment = function() {
+    if (this.sequences.length < 2) {
       throw "Alignment must contain at least two sequences " +
             "(a reference and a bisulfite-converted)";
     }
@@ -48,24 +68,22 @@ window.Alignment = {
     var duplicates =
       dl.groupby('id')
         .count()
-        .execute(alignment)
+        .execute(this.sequences)
         .filter(function(d){ return d.count > 1 });
 
     if (duplicates.length) {
       throw "The following sequence names were found more than once in the alignment: " +
             duplicates.map(dl.accessor('id')).join(', ');
     }
-  },
+  };
 
 
   // Tally CpG sites and their methylation status from a set of
   // multiply-aligned sequences.
   //
-  cpgSites: function(alignment) {
-    this.assertValidAlignment(alignment);
-
-    var reference = alignment[0];
-    var sites     = alignment.map(function(sequence, index){
+  Alignment.prototype._cpgSites = function() {
+    var reference = this.sequences[0];
+    var sites     = this.sequences.map(function(sequence, index){
       var CpG   = /[CT](?=G)/gi,
           sites = [],
           site;
@@ -95,21 +113,21 @@ window.Alignment = {
       }
 
       return sites;
-    }, this);
+    });
 
     // Flatten the array of arrays
     return sites
       .reduce(function(a,b){ return a.concat(b) });
-  },
+  };
 
 
   // Convert a tidy dataset of CpG sites (from the function above) into an
   // untidy table that's useful for presenting the data in a spreadsheet.
   //
-  cpgSitesToTable: function(cpgSites) {
+  Alignment.prototype.asTable = function() {
     // Collect all unique CpG sites in the alignment
     var alignmentSites = dl.unique(
-      cpgSites
+      this.cpgSites
         .map(function(s){ return s.site })
         .sort(function(a,b){ return a - b })
     );
@@ -124,7 +142,7 @@ window.Alignment = {
     rows = rows.concat(
       dl.groupby('sequence.id')
         .summarize([{ name: '*', ops: ['values'], as: ['cpgSites'] }])
-        .execute(cpgSites)
+        .execute(this.cpgSites)
         .map(function(seq) {
 
           // Methylated CpG sites in this sequence
@@ -150,7 +168,7 @@ window.Alignment = {
     );
 
     return rows;
-  }
+  };
 
-};
+})();
 // vim: set ts=2 sw=2 :
