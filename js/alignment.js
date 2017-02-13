@@ -210,11 +210,11 @@
           var methylations = seq.cpgSites
             .filter(function(site){ return site.status === 'methylated' });
 
-          var methylationsBySite = dl.toMap(methylations, 'site');
+          var isMethylatedAtSite = dl.toMap(methylations, 'site');
 
           // Methylation status of this sequence at every CpG site in the alignment
           var siteColumns = alignmentSites.map(function(site) {
-            return methylationsBySite[site] ? site : "";
+            return isMethylatedAtSite[site] ? site : "";
           });
 
           // Row for this sequence, matching the header row above
