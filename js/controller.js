@@ -32,13 +32,18 @@
       return window.URL.createObjectURL(blob);
     };
 
-    // Load example data and plot it
-    this.loadExample = function() {
-      $http.get('examples/HXB2-ENV.fasta').then(
+    // Load data and plot it
+    this.loadURL = function(url, name) {
+      if (!name) {
+        var path = url.split(/\//);
+        name = path[ path.length - 1 ];
+      }
+
+      $http.get(url).then(
         angular.bind(this, function(response) {
           this.fasta = {
             text: response.data,
-            name: 'Example: HXB2-ENV.fasta'
+            name: name
           };
         })
       );
