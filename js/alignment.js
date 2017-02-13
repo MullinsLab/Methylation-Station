@@ -88,7 +88,7 @@
   Alignment.prototype._cpgSites = function() {
     var reference = this.sequences[0];
     var sites     = this.sequences.map(function(sequence, index){
-      var CpG   = /[CT](?=G)/gi,
+      var CpG   = /[CT](?=-*G)/gi,
           sites = [],
           site;
 
@@ -132,7 +132,7 @@
   //
   Alignment.prototype._cphSites = function() {
     function findSites(sequence) {
-      var CpH   = /C(?!G)/gi,
+      var CpH   = /C(?!-*G)/gi,
           sites = [],
           site;
 
