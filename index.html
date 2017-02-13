@@ -95,11 +95,18 @@
               {{ app.alignment.sequences.length | number }} sequences
             </small>
           </h4>
-          <methylation-viz
-            data="app.alignment.analysisSites"
-            rendered="viz.rendered"
-            to-url="viz.toURL">
-          </methylation-viz>
+          <figure ng-if="app.alignment.analysisSites" ng-cloak>
+            <methylation-viz
+              data="app.alignment.analysisSites"
+              rendered="viz.rendered"
+              to-url="viz.toURL">
+            </methylation-viz>
+            <figcaption>
+              Black circles are CpG sites.  Those which are filled are
+              methylated.  Small red circles are bisulfite-conversion failures.
+              Site locations refer to alignment base positions.
+            </figcaption>
+          </figure>
         </div>
       </div>
     </div>

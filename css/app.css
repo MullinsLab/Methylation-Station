@@ -43,3 +43,8 @@ svg text {
 svg line {
   shape-rendering: crispEdges;
 }
+
+figcaption {
+  font-size: 85%;
+  max-width: 700px;
+}
