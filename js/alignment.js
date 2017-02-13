@@ -141,8 +141,10 @@
     }
 
     // Collect reference CpH sites so we can check them in each converted sequence
-    var referenceSites = findSites(this.sequences[0]);
-    var sequenceSites  = this.sequences.slice(1).map(function(sequence, index) {
+    var referenceSites  = findSites(reference);
+    var isReferenceSite = dl.toMap(referenceSites);
+
+    var sequenceSites = this.sequences.slice(1).map(function(sequence, index) {
       var sites = [];
 
       // Check all reference sites against this converted sequence
@@ -164,14 +166,16 @@
 
       // Add in any novel CpH for this sequence which failed.  Note that we
       // can't tell apart novel CpGs which were converted vs. novel TpGs.
-      findSites(sequence).forEach(function(site) {
-        sites.push({
-          sequence: sequence,
-          type:     "CpH",
-          site:     site,
-          status:   "unconverted"
+      findSites(sequence)
+        .filter(function(site){ return !isReferenceSite[site] })
+        .forEach(function(site) {
+          sites.push({
+            sequence: sequence,
+            type:     "CpH",
+            site:     site,
+            status:   "unconverted"
+          });
         });
-      });
 
       return sites;
     });
