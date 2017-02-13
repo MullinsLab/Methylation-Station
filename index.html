@@ -41,10 +41,18 @@
 
                 <a class="btn btn-success" target="_blank"
                   download="{{ app.alignment.name }}.csv"
-                  ng-click="$event.target.href = !app.alignment.cpgSites ? '' : app.dataToURL()"
+                  ng-click="$event.target.href = !app.alignment.cpgSites ? '' : app.tableToURL()"
                   ng-disabled="!app.alignment.cpgSites">
                   <span class="glyphicon glyphicon-list-alt"></span>
-                  Export data
+                  Export spreadsheet
+                </a>
+
+                <a class="btn btn-success" target="_blank"
+                  download="{{ app.alignment.name }}.csv"
+                  ng-click="$event.target.href = !app.alignment.analysisSites ? '' : app.dataToURL()"
+                  ng-disabled="!app.alignment.analysisSites">
+                  <span class="glyphicon glyphicon-download-alt"></span>
+                  Download raw data
                 </a>
               </div>
             </div>

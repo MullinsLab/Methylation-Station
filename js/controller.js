@@ -11,8 +11,22 @@
     $log.debug("Attached app controller");
 
     this.alignment = null;
-    this.dataToURL = function() {
+
+    // Spreadsheet download
+    this.tableToURL = function() {
       var rows = this.alignment.asTable();
+      var csv  = d3.csv.formatRows(rows);
+      var blob = new Blob([csv], {type: 'text/csv'});
+      return window.URL.createObjectURL(blob);
+    };
+
+    // Raw data download
+    this.dataToURL = function() {
+      var rows = [["sequence_index", "sequence_id", "type", "site", "status"]].concat(
+        this.alignment.analysisSites.map(function(d){
+          return [d.sequence.index, d.sequence.id, d.type, d.site, d.status];
+        })
+      );
       var csv  = d3.csv.formatRows(rows);
       var blob = new Blob([csv], {type: 'text/csv'});
       return window.URL.createObjectURL(blob);
