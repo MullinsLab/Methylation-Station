@@ -5,9 +5,9 @@
     .module('methylation-station')
     .controller('app', app);
 
-  app.$inject = ['$scope', '$log'];
+  app.$inject = ['$http', '$scope', '$log'];
 
-  function app($scope, $log) {
+  function app($http, $scope, $log) {
     $log.debug("Attached app controller");
 
     this.alignment = null;
@@ -30,6 +30,18 @@
       var csv  = d3.csv.formatRows(rows);
       var blob = new Blob([csv], {type: 'text/csv'});
       return window.URL.createObjectURL(blob);
+    };
+
+    // Load example data and plot it
+    this.loadExample = function() {
+      $http.get('examples/HXB2-ENV.fasta').then(
+        angular.bind(this, function(response) {
+          this.fasta = {
+            text: response.data,
+            name: 'Example: HXB2-ENV.fasta'
+          };
+        })
+      );
     };
 
     // Watch for alignment contents to change.  When it does, parse the new
