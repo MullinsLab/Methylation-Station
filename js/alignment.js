@@ -25,6 +25,7 @@
   //
   Alignment.prototype.parse = function(text) {
     var fasta = [],
+        index = 0,
         sequence;
 
     text.split(/\r\n|\r|\n/).forEach(function(line){
@@ -39,6 +40,7 @@
         sequence = {
           id:          name[0],
           description: name[1],
+          index:       index++,
           seq:         ""
         };
       }

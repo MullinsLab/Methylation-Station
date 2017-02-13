@@ -27,7 +27,6 @@
         { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
         { "type": "filter", "test": "datum.status !== 'converted'" },
         { "type": "facet", "groupby": "sequenceId" },
-        { "type": "rank" },
         { "type": "formula", "field": "sequence", "expr": "datum.values[0].sequence" }
       ]
     },
@@ -35,7 +34,7 @@
       "name": "reference",
       "source": "alignment",
       "transform": [
-        { "type": "filter", "test": "datum.rank === 1" },
+        { "type": "filter", "test": "datum.sequence.index === 0" },
         { "type": "formula", "field": "length", "expr": "datum.sequence.seq.length" }
       ]
     },
@@ -43,7 +42,7 @@
       "name": "sequences",
       "source": "alignment",
       "transform": [
-        { "type": "filter", "test": "datum.rank > 1" }
+        { "type": "filter", "test": "datum.sequence.index > 0" }
       ]
     }
   ],
@@ -82,7 +81,7 @@
           "fontSize": {"value": 11},
           "baseline": {"value": "middle"},
           "x": {"field": {"group": "width"}, "offset": 10},
-          "y": {"field": "rank", "mult": 10, "offset": -10},
+          "y": {"field": "sequence.index", "mult": 10},
           "dy": {"value": 2}
         }
       }
@@ -97,7 +96,7 @@
         "update": {
           "x": {"value": 0},
           "x2": {"field": {"group": "width"}},
-          "y": {"field": "rank", "mult": 10, "offset": -10},
+          "y": {"field": "sequence.index", "mult": 10},
           "stroke": [
             {"value": "blue", "test": "highlight === datum.sequenceId"},
             {"value": "#888"}
@@ -119,7 +118,7 @@
           "fontSize": {"value": 11},
           "baseline": {"value": "bottom"},
           "x": {"field": {"group": "width"}, "offset": 10},
-          "y": {"field": "rank", "mult": 10, "offset": -10}
+          "y": {"field": "sequence.index", "mult": 10}
         }
       }
     },
@@ -132,7 +131,7 @@
       "properties": {
         "update": {
           "x": {"value": 0},
-          "y": {"field": "rank", "mult": 10, "offset": -10}
+          "y": {"field": "sequence.index", "mult": 10}
         }
       },
       "marks": [
@@ -161,7 +160,7 @@
       "properties": {
         "update": {
           "x": {"value": 0},
-          "y": {"field": "rank", "mult": 10, "offset": -10}
+          "y": {"field": "sequence.index", "mult": 10}
         }
       },
       "marks": [
