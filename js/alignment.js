@@ -141,6 +141,7 @@
     }
 
     // Collect reference CpH sites so we can check them in each converted sequence
+    var reference       = this.sequences[0];
     var referenceSites  = findSites(reference);
     var isReferenceSite = dl.toMap(referenceSites);
 
@@ -180,14 +181,27 @@
       return sites;
     });
 
+    // Add reference sites back into final dataset for completeness.  This is
+    // useful when computing the table.
+    sequenceSites.unshift(
+      referenceSites.map(function(site) {
+        return {
+          sequence: reference,
+          type:     "CpH",
+          site:     site,
+          status:   "converted"
+        }
+      })
+    );
+
     // Flatten the array of arrays
     return sequenceSites
       .reduce(function(a,b){ return a.concat(b) });
   };
 
 
-  // Convert a tidy dataset of CpG sites (from the function above) into an
-  // untidy table that's useful for presenting the data in a spreadsheet.
+  // Convert a tidy dataset of analysis sites into an untidy table that's
+  // useful for presenting the data in a spreadsheet.
   //
   Alignment.prototype.asTable = function() {
     // Collect all unique CpG sites in the alignment
@@ -201,17 +215,26 @@
     var rows = [
       ["Sequence", "CpG sites", "Methylated sites", "% Methylation"]
         .concat(alignmentSites)
+        .concat(["CpH sites", "Conversion failures", "Conversion rate", "Failed sites"])
     ];
+
+    // Group all analysis sites by sequence and then type (CpG/CpH)
+    var bySequenceAndType =
+      d3.nest()
+        .key(dl.accessor('sequence.id'))
+        .rollup(function(values){
+          return d3.nest()
+            .key(dl.accessor('type'))
+            .map(values)
+        })
+        .entries(this.analysisSites);
 
     // Add one row per sequence, summarizing the set of sites for each sequence
     rows = rows.concat(
-      dl.groupby('sequence.id')
-        .summarize([{ name: '*', ops: ['values'], as: ['cpgSites'] }])
-        .execute(this.cpgSites)
-        .map(function(seq) {
+      bySequenceAndType.map(function(seq) {
 
           // Methylated CpG sites in this sequence
-          var methylations = seq.cpgSites
+          var methylations = seq.values.CpG
             .filter(function(site){ return site.status === 'methylated' });
 
           var isMethylatedAtSite = dl.toMap(methylations, 'site');
@@ -221,14 +244,22 @@
             return isMethylatedAtSite[site] ? site : "";
           });
 
+          // Failed sites
+          var failures = seq.values.CpH
+            .filter(function(site){ return site.status === 'unconverted' });
+
           // Row for this sequence, matching the header row above
           return [
-            seq["sequence.id"],
-            seq.cpgSites.length,
+            seq.key,
+            seq.values.CpG.length,
             methylations.length,
-            (methylations.length / seq.cpgSites.length * 100).toFixed(1)
-          ].concat(siteColumns);
-
+            (methylations.length / seq.values.CpG.length * 100).toFixed(1)
+          ].concat(siteColumns).concat([
+            seq.values.CpH.length,
+            failures.length,
+            ((seq.values.CpH.length - failures.length) / seq.values.CpH.length * 100).toFixed(1),
+            failures.map(dl.accessor('site')).join(', ')
+          ]);
         })
     );
 
