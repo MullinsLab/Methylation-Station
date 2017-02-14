@@ -120,9 +120,18 @@
       return sites;
     });
 
+    var isReferenceSite = dl.toMap(sites[0], 'site');
+
     // Flatten the array of arrays
-    return sites
-      .reduce(function(a,b){ return a.concat(b) });
+    sites = sites.reduce(function(a,b){ return a.concat(b) });
+
+    // Mark sites as in the reference or not (novel to this sequence)
+    sites = sites.map(function(d){
+      d.isInReference = isReferenceSite[d.site];
+      return d;
+    });
+
+    return sites;
   };
 
 

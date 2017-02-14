@@ -49,6 +49,25 @@
       );
     };
 
+    // Sync our filtered UI data from the primary alignment analysis data
+    //
+    this.update = function() {
+      if (!this.alignment)
+        return;
+
+      var data = this.alignment.analysisSites;
+
+      if (this.filter) {
+        if (this.filter.hideCpH)
+          data = data.filter(function(d){ return d.type !== 'CpH' });
+
+        if (this.filter.hideNovelCpG)
+          data = data.filter(function(d){ return d.type !== 'CpG' || d.isInReference });
+      }
+
+      this.alignment.filteredSites = data;
+    };
+
     // Watch for alignment contents to change.  When it does, parse the new
     // alignment and retabulate the methylation data.
     $scope.$watch(
@@ -61,8 +80,10 @@
       this.alignment = null;
       this.error     = null;
 
-      if (!newFasta)
+      if (!newFasta) {
+        this.update();
         return;
+      }
 
       try {
         $log.debug("Parsing FASTA", this.fasta.name);
@@ -73,6 +94,7 @@
         $log.error(e);
         return;
       }
+      this.update();
     }
   }
 

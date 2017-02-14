@@ -90,7 +90,7 @@
             (or <a href="examples/HXB2-ENV.fasta">download the FASTA</a>).
           </p>
         </div>
-        <div class="col col-sm-12">
+        <div class="col col-sm-12 col-md-9">
           <div ng-if="app.error" class="alert alert-danger" role="alert" ng-cloak>
             😟 {{ app.error }}
           </div>
@@ -103,16 +103,41 @@
           </h4>
           <figure>
             <methylation-viz
-              data="app.alignment.analysisSites"
+              data="app.alignment.filteredSites"
               rendered="viz.rendered"
               to-url="viz.toURL">
             </methylation-viz>
             <figcaption ng-if="viz.rendered" ng-cloak>
-              Black circles are CpG sites.  Those which are filled are
-              methylated.  Small red circles are bisulfite-conversion failures.
+              Black circles are CpG sites.  Those which are filled are methylated.
+              <em ng-if="app.filter.hideNovelCpG">Non-reference (novel) CpG sites are not shown.</em>
+
+              Small red circles are bisulfite-conversion
+              failures<em ng-if="app.filter.hideCpH"> (currently hidden)</em>.
+
               Site locations refer to alignment base positions.
             </figcaption>
           </figure>
+        </div>
+        <div class="col col-sm-6 col-md-3" ng-if="viz.rendered" ng-cloak>
+          <div class="panel panel-default small">
+            <div class="panel-heading">
+              Visualization options
+            </div>
+            <div class="panel-body">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="app.filter.hideCpH" ng-change="app.update()">
+                  Hide failed conversions
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="app.filter.hideNovelCpG" ng-change="app.update()">
+                  Hide non-reference CpG sites
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

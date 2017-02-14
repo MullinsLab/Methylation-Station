@@ -49,3 +49,11 @@ figcaption {
   font-size: 85%;
   max-width: 700px;
 }
+
+.panel-body > .checkbox:first-child {
+  margin-top: 0;
+}
+
+.panel-body > .checkbox:last-child {
+  margin-bottom: 0;
+}
