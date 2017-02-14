@@ -40,6 +40,10 @@ label input[type=file] {
   display: inline-block;
 }
 
+.explanation p {
+  max-width: 40em;
+}
+
 svg text {
   cursor: default;
 }
