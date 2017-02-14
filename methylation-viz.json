@@ -140,10 +140,11 @@
           "properties": {
             "update": {
               "text": {"field": "site"},
-              "fontSize": {"value": 11},
+              "fontSize": {"value": 10},
               "fill": {"value": "#333"},
-              "align": {"value": "center"},
-              "baseline": {"value": "bottom"},
+              "align": {"value": "left"},
+              "baseline": {"value": "middle"},
+              "angle": {"value": -45},
               "x": {"field": "site", "scale": "x"},
               "y": {"value": 0}
             }
