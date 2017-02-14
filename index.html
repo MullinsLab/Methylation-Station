@@ -21,7 +21,7 @@
         <div class="col col-sm-12">
           <div class="panel panel-default">
             <div class="panel-body">
-              <label class="btn btn-primary">
+              <label class="btn btn-primary open-file">
                 <span class="glyphicon glyphicon-open-file"></span>
                 Open an alignment
                 <input type="file" file-model
@@ -30,7 +30,7 @@
                   file-data-as="Text">
               </label>
 
-              <div class="actions" ng-cloak>
+              <div class="actions">
                 <a class="btn btn-success" target="_blank"
                   download="{{ app.alignment.name }}.svg"
                   ng-click="$event.target.href = !viz.rendered ? '' : viz.toURL()"

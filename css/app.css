@@ -32,9 +32,12 @@ label input[type=file] {
   display: none;
 }
 
+.open-file {
+  margin-right: 40px;
+}
+
 .actions {
   display: inline-block;
-  margin-left: 40px;
 }
 
 svg text {
