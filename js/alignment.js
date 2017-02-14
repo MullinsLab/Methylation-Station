@@ -17,6 +17,8 @@
       Object.defineProperty(this, prop, { writable: false });
     }, this);
 
+    this._calculateStats();
+
     return this;
   }
 
@@ -57,6 +59,13 @@
       fasta.push(sequence);
 
     return fasta;
+  };
+
+
+  // Return a sequence in this alignment by id
+  //
+  Alignment.prototype.getSequence = function(id) {
+    return d3.map(this.sequences, dl.accessor('id')).get(id);
   };
 
 
@@ -211,6 +220,52 @@
   };
 
 
+  Alignment.prototype._calculateStats = function() {
+    // Group all analysis sites by sequence and then type (CpG/CpH)
+    var bySequenceAndType =
+      d3.nest()
+        .key(dl.accessor('sequence.id'))
+        .rollup(function(values){
+          return d3.nest()
+            .key(dl.accessor('type'))
+            .map(values)
+        })
+        .entries(this.analysisSites);
+
+    bySequenceAndType.forEach(function(d) {
+      var sequence = this.getSequence(d.key);
+      if (!sequence)
+        throw "Assertion failed: No sequence for id " + d.key;
+
+      // Methylated CpG sites in this sequence
+      var methylations = d.values.CpG
+        .filter(function(site){ return site.status === 'methylated' })
+        .map(dl.accessor('site'));
+
+      // Failed sites
+      var failures = d.values.CpH
+        .filter(function(site){ return site.status === 'unconverted' })
+        .map(dl.accessor('site'));
+
+      // Add calculated stats to our stored sequences
+      sequence.stats = {
+        CpG: {
+          count:              d.values.CpG.length,
+          methylatedCount:    methylations.length,
+          percentMethylated:  methylations.length / d.values.CpG.length * 100,
+          methylatedSites:    methylations
+        },
+        CpH: {
+          count:              d.values.CpH.length,
+          unconvertedCount:   failures.length,
+          percentConverted:   (d.values.CpH.length - failures.length) / d.values.CpH.length * 100,
+          failedSites:        failures
+        }
+      };
+    }, this);
+  };
+
+
   // Convert a tidy dataset of analysis sites into an untidy table that's
   // useful for presenting the data in a spreadsheet.
   //
@@ -229,49 +284,31 @@
         .concat(["CpH sites", "Conversion failures", "Conversion rate", "Failed sites"])
     ];
 
-    // Group all analysis sites by sequence and then type (CpG/CpH)
-    var bySequenceAndType =
-      d3.nest()
-        .key(dl.accessor('sequence.id'))
-        .rollup(function(values){
-          return d3.nest()
-            .key(dl.accessor('type'))
-            .map(values)
-        })
-        .entries(this.analysisSites);
-
     // Add one row per sequence, summarizing the set of sites for each sequence
     rows = rows.concat(
-      bySequenceAndType.map(function(seq) {
+      this.sequences.map(function(seq) {
 
-          // Methylated CpG sites in this sequence
-          var methylations = seq.values.CpG
-            .filter(function(site){ return site.status === 'methylated' });
+        // Methylated CpG sites in this sequence
+        var isMethylatedAtSite = dl.toMap(seq.stats.CpG.methylatedSites);
 
-          var isMethylatedAtSite = dl.toMap(methylations, 'site');
+        // Methylation status of this sequence at every CpG site in the alignment
+        var siteColumns = alignmentSites.map(function(site) {
+          return isMethylatedAtSite[site] ? site : "";
+        });
 
-          // Methylation status of this sequence at every CpG site in the alignment
-          var siteColumns = alignmentSites.map(function(site) {
-            return isMethylatedAtSite[site] ? site : "";
-          });
-
-          // Failed sites
-          var failures = seq.values.CpH
-            .filter(function(site){ return site.status === 'unconverted' });
-
-          // Row for this sequence, matching the header row above
-          return [
-            seq.key,
-            seq.values.CpG.length,
-            methylations.length,
-            (methylations.length / seq.values.CpG.length * 100).toFixed(1)
-          ].concat(siteColumns).concat([
-            seq.values.CpH.length,
-            failures.length,
-            ((seq.values.CpH.length - failures.length) / seq.values.CpH.length * 100).toFixed(1),
-            failures.map(dl.accessor('site')).join(', ')
-          ]);
-        })
+        // Row for this sequence, matching the header row above
+        return [
+          seq.id,
+          seq.stats.CpG.count,
+          seq.stats.CpG.methylatedCount,
+          seq.stats.CpG.percentMethylated.toFixed(1)
+        ].concat(siteColumns).concat([
+          seq.stats.CpH.count,
+          seq.stats.CpH.unconvertedCount,
+          seq.stats.CpH.percentConverted.toFixed(1),
+          seq.stats.CpH.failedSites.join(', ')
+        ]);
+      })
     );
 
     return rows;
