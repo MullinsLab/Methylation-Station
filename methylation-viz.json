@@ -27,7 +27,8 @@
         { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
         { "type": "filter", "test": "datum.status !== 'converted'" },
         { "type": "facet", "groupby": "sequenceId" },
-        { "type": "formula", "field": "sequence", "expr": "datum.values[0].sequence" }
+        { "type": "formula", "field": "sequence", "expr": "datum.values[0].sequence" },
+        { "type": "formula", "field": "displayIndex", "expr": "datum.sequence.displayIndex || datum.sequence.index" }
       ]
     },
     {
@@ -81,7 +82,7 @@
           "fontSize": {"value": 11},
           "baseline": {"value": "middle"},
           "x": {"field": {"group": "width"}, "offset": 10},
-          "y": {"field": "sequence.index", "mult": 10},
+          "y": {"field": "displayIndex", "mult": 10},
           "dy": {"value": 2}
         }
       }
@@ -96,7 +97,7 @@
         "update": {
           "x": {"value": 0},
           "x2": {"field": {"group": "width"}},
-          "y": {"field": "sequence.index", "mult": 10},
+          "y": {"field": "displayIndex", "mult": 10},
           "stroke": [
             {"value": "blue", "test": "highlight === datum.sequenceId"},
             {"value": "#888"}
@@ -118,7 +119,7 @@
           "fontSize": {"value": 11},
           "baseline": {"value": "bottom"},
           "x": {"field": {"group": "width"}, "offset": 10},
-          "y": {"field": "sequence.index", "mult": 10}
+          "y": {"field": "displayIndex", "mult": 10}
         }
       }
     },
@@ -131,7 +132,7 @@
       "properties": {
         "update": {
           "x": {"value": 0},
-          "y": {"field": "sequence.index", "mult": 10}
+          "y": {"field": "displayIndex", "mult": 10}
         }
       },
       "marks": [
@@ -161,7 +162,7 @@
       "properties": {
         "update": {
           "x": {"value": 0},
-          "y": {"field": "sequence.index", "mult": 10}
+          "y": {"field": "displayIndex", "mult": 10}
         }
       },
       "marks": [

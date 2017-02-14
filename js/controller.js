@@ -49,7 +49,8 @@
       );
     };
 
-    // Sync our filtered UI data from the primary alignment analysis data
+    // Sync our filtered and sorted UI data from the primary
+    // alignment analysis data
     //
     this.update = function() {
       if (!this.alignment)
@@ -57,6 +58,7 @@
 
       var data = this.alignment.analysisSites;
 
+      // Filters
       if (this.filter) {
         if (this.filter.hideCpH)
           data = data.filter(function(d){ return d.type !== 'CpH' });
@@ -65,7 +67,28 @@
           data = data.filter(function(d){ return d.type !== 'CpG' || d.isInReference });
       }
 
-      this.alignment.filteredSites = data;
+      // Sort - Note that the underlying array of sequences is modified
+      // in-place, as sorting should affect the spreadsheet output as well.
+      var sortKey = this.sortByMethylation
+        ? dl.accessor('stats.CpG.percentMethylated')
+        : dl.accessor('index');
+
+      this.alignment.sequences
+        .sort(function(a,b) {
+          if (a.index === 0) return -1;
+          if (b.index === 0) return 1;
+          return sortKey(a) - sortKey(b)
+              || a.index - b.index;
+        })
+        .forEach(function(sequence, index) {
+          sequence.displayIndex = index;
+        });
+
+      // Deep clone the data so
+      //   a) an Angular update is always forced by referential inequality
+      //      without needing deep equality, and
+      //   b) the visualization can't change the underlying data.
+      this.alignment.filteredSites = angular.copy(data);
     };
 
     // Watch for alignment contents to change.  When it does, parse the new
