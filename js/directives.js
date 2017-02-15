@@ -27,7 +27,7 @@
             return;
           }
 
-          vg.parse.spec("methylation-viz.json", function(error, chart) {
+          vg.parse.spec(MethylationVizSpec, function(error, chart) {
             elementScope.$apply(function(scope) {
               if (error) {
                 $log.error("Error parsing Vega spec: " + error);

@@ -1,6 +1,12 @@
-{
+// vim: set ft=javascript sw=2 ts=2 :
+var MethylationVizSpec = {
+  // We don't use a fixed height.  It's dynamic based on the number of
+  // sequences in the alignment.
   "width": 700,
   "height": 0,
+
+  // Hovering over a sequence site, sequence name, or sequence axis highlights
+  // that row of the alignment.
   "signals": [
     {
       "name": "highlight",
@@ -15,7 +21,9 @@
       ]
     }
   ],
+
   "data": [
+    // The primary analysis data of the alignment.  A record per CpG/CpH site.
     {
       "name": "alignment",
       "format": {
@@ -24,13 +32,28 @@
         }
       },
       "transform": [
-        { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
+        // We don't currently care about successfully converted CpH sites
         { "type": "filter", "test": "datum.status !== 'converted'" },
+
+        // Group sites by their sequence.  This lets us draw each sequence and
+        // then draw each site.  Vega can't usefully group by a nested field,
+        // so we copy the sequence id into the root object.
+        { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
         { "type": "facet", "groupby": "sequenceId" },
+
+        // Copy the sequence object for this group of sites into the root
+        // object so we can more easily refer to it.
         { "type": "formula", "field": "sequence", "expr": "datum.values[0].sequence" },
+
+        // We'll use displayIndex to display the sequences in a desired order,
+        // if available, falling back to the original alignment order.
         { "type": "formula", "field": "displayIndex", "expr": "datum.sequence.displayIndex || datum.sequence.index" }
       ]
     },
+
+    // Extract the reference sequence (always the first sequence in the
+    // alignment) so we can draw it separately.  Precompute the length of the
+    // alignment for our x scale.
     {
       "name": "reference",
       "source": "alignment",
@@ -39,6 +62,9 @@
         { "type": "formula", "field": "length", "expr": "datum.sequence.seq.length" }
       ]
     },
+
+    // Filter out the reference sequence so we can draw the non-reference
+    // sequences separately.
     {
       "name": "sequences",
       "source": "alignment",
@@ -47,7 +73,10 @@
       ]
     }
   ],
+
   "scales": [
+    // A global x scale just mapping the width of our image to the length of
+    // the alignment.
     {
       "name": "x",
       "type": "linear",
@@ -57,6 +86,8 @@
       "domainMax": {"data": "reference", "field": "length"},
       "zero": false
     },
+
+    // Fill colors for each site status
     {
       "name": "fill",
       "type": "ordinal",
@@ -64,7 +95,9 @@
       "range": ["#333", "white", "red"]
     }
   ],
+
   "marks": [
+    // Draw sequence names on the left hand side
     {
       "name": "sequenceName",
       "type": "text",
@@ -87,6 +120,8 @@
         }
       }
     },
+
+    // Draw an axis line for each sequence representing it
     {
       "name": "sequenceAxis",
       "type": "rule",
@@ -105,6 +140,8 @@
         }
       }
     },
+
+    // Draw the reference name
     {
       "name": "referenceName",
       "type": "text",
@@ -123,6 +160,8 @@
         }
       }
     },
+
+    // Label the reference sites with numbers
     {
       "name": "referenceSites",
       "type": "group",
@@ -153,6 +192,10 @@
         }
       ]
     },
+
+    // For each sequence, plot each site.  This is a group mark which produces
+    // one group per sequence, with each group containing the marks for
+    // individual sites.
     {
       "name": "sequence",
       "type": "group",
