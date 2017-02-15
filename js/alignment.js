@@ -250,6 +250,7 @@
       // Add calculated stats to our stored sequences
       sequence.stats = {
         CpG: {
+          sites:              d.values.CpG.map(dl.accessor('site')),
           count:              d.values.CpG.length,
           methylatedCount:    methylations.length,
           percentMethylated:  methylations.length / d.values.CpG.length * 100,
@@ -288,12 +289,15 @@
     rows = rows.concat(
       this.sequences.map(function(seq) {
 
-        // Methylated CpG sites in this sequence
+        // CpG and methylated CpG sites in this sequence
+        var hasCpGSite         = dl.toMap(seq.stats.CpG.sites);
         var isMethylatedAtSite = dl.toMap(seq.stats.CpG.methylatedSites);
 
         // Methylation status of this sequence at every CpG site in the alignment
         var siteColumns = alignmentSites.map(function(site) {
-          return isMethylatedAtSite[site] ? site : "";
+          return isMethylatedAtSite[site] ? site :
+                         hasCpGSite[site] ?   "" :
+                                            "NA" ;
         });
 
         // Row for this sequence, matching the header row above
