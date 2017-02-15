@@ -33,11 +33,19 @@ var MethylationVizSpec = {
       },
       "transform": [
         // We don't currently care about successfully converted CpH sites
-        { "type": "filter", "test": "datum.status !== 'converted'" },
+        { "type": "filter", "test": "datum.status !== 'converted'" }
+      ]
+    },
 
-        // Group sites by their sequence.  This lets us draw each sequence and
-        // then draw each site.  Vega can't usefully group by a nested field,
-        // so we copy the sequence id into the root object.
+    // Group/facet sites by their sequence.  This lets us use Vega group marks
+    // to draw each sequence and then draw each site in the context of the
+    // sequence.
+    {
+      "name": "alignmentBySequence",
+      "source": "alignment",
+      "transform": [
+        // Vega can't usefully group by a nested field, so we copy the sequence
+        // id into the root object.
         { "type": "formula", "field": "sequenceId", "expr": "datum.sequence.id" },
         { "type": "facet", "groupby": "sequenceId" },
 
@@ -51,12 +59,22 @@ var MethylationVizSpec = {
       ]
     },
 
+    // All unique CpG sites in the alignment, for the purposes of labeling.
+    {
+      "name": "alignmentCpGSites",
+      "source": "alignment",
+      "transform": [
+        { "type": "filter", "test": "datum.type === 'CpG'" },
+        { "type": "aggregate", "groupby": ["site"], "summarize": {"*": "count"} }
+      ]
+    },
+
     // Extract the reference sequence (always the first sequence in the
     // alignment) so we can draw it separately.  Precompute the length of the
     // alignment for our x scale.
     {
       "name": "reference",
-      "source": "alignment",
+      "source": "alignmentBySequence",
       "transform": [
         { "type": "filter", "test": "datum.sequence.index === 0" },
         { "type": "formula", "field": "length", "expr": "datum.sequence.seq.length" }
@@ -67,7 +85,7 @@ var MethylationVizSpec = {
     // sequences separately.
     {
       "name": "sequences",
-      "source": "alignment",
+      "source": "alignmentBySequence",
       "transform": [
         { "type": "filter", "test": "datum.sequence.index > 0" }
       ]
@@ -161,36 +179,25 @@ var MethylationVizSpec = {
       }
     },
 
-    // Label the reference sites with numbers
+    // Label all CpG sites with numbers
     {
-      "name": "referenceSites",
-      "type": "group",
+      "name": "alignmentCpgSites",
+      "type": "text",
       "from": {
-        "data": "reference"
+        "data": "alignmentCpGSites"
       },
       "properties": {
         "update": {
-          "x": {"value": 0},
-          "y": {"field": "displayIndex", "mult": 10}
+          "text": {"field": "site"},
+          "fontSize": {"value": 10},
+          "fill": {"value": "#333"},
+          "align": {"value": "left"},
+          "baseline": {"value": "middle"},
+          "angle": {"value": -45},
+          "x": {"field": "site", "scale": "x"},
+          "y": {"value": 0}
         }
-      },
-      "marks": [
-        {
-          "type": "text",
-          "properties": {
-            "update": {
-              "text": {"field": "site"},
-              "fontSize": {"value": 10},
-              "fill": {"value": "#333"},
-              "align": {"value": "left"},
-              "baseline": {"value": "middle"},
-              "angle": {"value": -45},
-              "x": {"field": "site", "scale": "x"},
-              "y": {"value": 0}
-            }
-          }
-        }
-      ]
+      }
     },
 
     // For each sequence, plot each site.  This is a group mark which produces
