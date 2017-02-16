@@ -120,7 +120,14 @@ var MethylationVizSpec = {
       "name": "sequenceName",
       "type": "text",
       "from": {
-        "data": "sequences"
+        "data": "sequences",
+        "transform": [
+          // Rendering the names from bottom to top means that text above will
+          // overlap text below.  This is desired when a sequence name is
+          // highlighted and the font size increased such that minor overlap
+          // occurs.
+          {"type": "sort", "by": "-displayIndex"}
+        ]
       },
       "properties": {
         "update": {
@@ -130,7 +137,10 @@ var MethylationVizSpec = {
             {"value": "#888"}
           ],
           "align": {"value": "left"},
-          "fontSize": {"value": 11},
+          "fontSize": [
+            {"value": 13, "test": "highlight === datum.sequenceId"},
+            {"value": 11}
+          ],
           "baseline": {"value": "middle"},
           "x": {"field": {"group": "width"}, "offset": 10},
           "y": {"field": "displayIndex", "mult": 10},

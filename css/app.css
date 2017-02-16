@@ -44,6 +44,10 @@ label input[type=file] {
   max-width: 40em;
 }
 
+methylation-viz svg {
+  overflow: visible !important;
+}
+
 svg text {
   cursor: default;
 }
