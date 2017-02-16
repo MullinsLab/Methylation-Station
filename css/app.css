@@ -32,8 +32,20 @@ label input[type=file] {
   display: none;
 }
 
+.alignment-name h4 {
+  margin-top: 0;
+}
+
 .open-file {
   margin-right: 40px;
+}
+
+.close-file {
+  margin-right: 6px;
+}
+
+.close-file:hover {
+  text-decoration: none;
 }
 
 .actions {
