@@ -4,7 +4,8 @@
   // Overall app-level module which pulls in other things and sets up defaults.
   angular
     .module('methylation-station', [
-      'fileModel'
+      'fileModel',
+      'rt.debounce'
     ])
     .config(configure)
     .run(init);

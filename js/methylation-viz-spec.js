@@ -1,9 +1,13 @@
 // vim: set ft=javascript sw=2 ts=2 :
 var MethylationVizSpec = {
   // We don't use a fixed height.  It's dynamic based on the number of
-  // sequences in the alignment.
+  // sequences in the alignment.  The width is a default which is dynamically
+  // modified by the application to fit the visualization container's width.
+  // Strict padding means that Vega will try to fit the whole visualization
+  // into the view width instead of allowing marks to expand the width.
   "width": 700,
   "height": 0,
+  "padding": "strict",
 
   // Hovering over a sequence site, sequence name, or sequence axis highlights
   // that row of the alignment.

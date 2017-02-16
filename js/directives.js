@@ -5,9 +5,9 @@
     .module('methylation-station')
     .directive('methylationViz', methylationViz);
 
-  methylationViz.$inject = ['$log'];
+  methylationViz.$inject = ['debounce', '$log'];
 
-  function methylationViz($log) {
+  function methylationViz(debounce, $log) {
     return {
       restrict: 'E',
       replace: false,
@@ -35,13 +35,15 @@
                 return;
               }
 
-              var view = chart({
+              var view = element[0].view = chart({
                 el: element[0],
                 renderer: "svg"
               });
 
               view.data("alignment")
                 .insert(newValue);
+
+              view.width(element[0].clientWidth);
 
               view.update();
               scope.rendered = true;
@@ -67,6 +69,24 @@
             });
           });
         });
+
+        // Update the Vega view when our element's width changes
+        elementScope.$watch(
+          function(){ return element[0].clientWidth },
+          function(newValue, oldValue) {
+            if (element[0] && element[0].view && newValue)
+              element[0].view.width(newValue).update();
+          }
+        );
+
+        // The resize event normally wouldn't trigger an angular scope digest,
+        // meaning our watch above wouldn't fire.  We manually ask the scope to
+        // update at most every 500ms during a stream of resize events.
+        window.addEventListener(
+          'resize',
+          debounce(500, elementScope.$apply.bind(elementScope)),
+          false
+        );
       }
     };
   }
