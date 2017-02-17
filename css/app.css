@@ -23,6 +23,10 @@ body {
   display: none !important;
 }
 
+a[ng-click] {
+  cursor: pointer;
+}
+
 h1 img {
   display: inline-block;
   height: 60px;
