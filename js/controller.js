@@ -65,6 +65,9 @@
 
         if (this.filter.hideNovelCpG)
           data = data.filter(function(d){ return d.type !== 'CpG' || d.isInReference });
+
+        if (this.filter.hideMixedSites)
+          data = data.filter(function(d){ return d.status !== 'mixed' });
       }
 
       // Sort - Note that the underlying array of sequences is modified

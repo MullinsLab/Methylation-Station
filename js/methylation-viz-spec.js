@@ -109,12 +109,24 @@ var MethylationVizSpec = {
       "zero": false
     },
 
-    // Fill colors for each site status
+    // Fill colors for each site status.
+    //
+    // URL references are to SVG definitions external to this file, but
+    // embedded in the HTML document.  They could live in a separate SVG file,
+    // but Chrome doesn't support remote URL references for SVG despite it
+    // being a key feature in the spec.  If the external definitions aren't
+    // available, the fallback color is used.
     {
       "name": "fill",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "unconverted"],
-      "range": ["#333", "white", "red"]
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
+      "range": ["#333", "white", "url(#half-filled) #ccc", "red"]
+    },
+    {
+      "name": "highlight-fill",
+      "type": "ordinal",
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
+      "range": ["blue", "white", "url(#half-filled-blue) #ccf", "red"]
     }
   ],
 
@@ -237,8 +249,8 @@ var MethylationVizSpec = {
               "x": {"scale": "x", "field": "site"},
               "y": {"value": 0},
               "fill": [
-                {"value": "blue", "test": "highlight === datum.sequenceId && datum.status === 'methylated'"},
-                {"scale": "fill", "field": "status"}
+                {"field": "status", "scale": "highlight-fill", "test": "highlight === datum.sequenceId"},
+                {"field": "status", "scale": "fill"}
               ],
               "stroke": [
                 {"field": "status", "scale": "fill", "test": "datum.status === 'unconverted'"},

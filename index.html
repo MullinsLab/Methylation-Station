@@ -73,6 +73,10 @@
           </p>
 
           <p>
+            Sequence names must be unique within the alignment.
+          </p>
+
+          <p>
             All sequences should read 5′ → 3′ left to right, so that
             <a href="https://en.wikipedia.org/wiki/CpG_site">CpG sites</a>
             appear as <tt>CG</tt> in your file.  Sequence contexts other than CpG,
@@ -81,7 +85,15 @@
           </p>
 
           <p>
-            Sequence names must be unique within the alignment.
+            At CpG sites, your sequences may use the standard
+            <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">IUPAC symbol</a>
+            <tt>Y</tt> to represent a position that’s observed as
+            both <tt>C</tt> and <tt>T</tt> in your sample population.  While
+            such sites will be plotted, they are not included when calculating
+            the methylation level of each sequence, because there is no way to
+            specify the relative ratio of <tt>C</tt> to <tt>T</tt>.  All other
+            ambiguous nucleotides are ignored, and not even <tt>Y</tt> is
+            considered at CpH sites.
           </p>
 
           <p>
@@ -143,6 +155,12 @@
               </div>
               <div class="checkbox">
                 <label>
+                  <input type="checkbox" ng-model="app.filter.hideMixedSites" ng-change="app.update()">
+                  Hide mixed methylation (YpG) sites
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
                   <input type="checkbox" ng-model="app.sortByMethylation" ng-change="app.update()">
                   Sort by percent methylated
                 </label>
@@ -153,6 +171,24 @@
       </div>
     </div>
   </body>
+
+  <svg height="1" width="1" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <linearGradient id="half-filled" patternUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="white" />
+        <stop offset="50%"  stop-color="white" />
+        <stop offset="50%"  stop-color="#333" />
+        <stop offset="100%" stop-color="#333" />
+      </linearGradient>
+      <linearGradient id="half-filled-blue" patternUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="white" />
+        <stop offset="50%"  stop-color="white" />
+        <stop offset="50%"  stop-color="blue" />
+        <stop offset="100%" stop-color="blue" />
+      </linearGradient>
+    </defs>
+  </svg>
+
   <script src="js/vendor/d3-3.5.5.min.js"></script>
   <script src="js/vendor/vega-2.6.5.min.js"></script>
   <script src="js/vendor/datalib-0.1.14.min.js"></script>

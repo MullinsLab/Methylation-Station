@@ -97,7 +97,7 @@
   Alignment.prototype._cpgSites = function() {
     var reference = this.sequences[0];
     var sites     = this.sequences.map(function(sequence, index){
-      var CpG   = /[CT](?=-*G)/gi,
+      var CpG   = /[CTY](?=-*G)/gi,
           sites = [],
           site;
 
@@ -116,6 +116,7 @@
             index ===  0  ?    "reference" :
           siteNuc === 'C' ?   "methylated" :
           siteNuc === 'T' ? "unmethylated" :
+          siteNuc === 'Y' ?        "mixed" :
                                       null ;
 
         sites.push({
@@ -242,6 +243,10 @@
         .filter(function(site){ return site.status === 'methylated' })
         .map(dl.accessor('site'));
 
+      var mixedMethylations = d.values.CpG
+        .filter(function(site){ return site.status === 'mixed' })
+        .map(dl.accessor('site'));
+
       // Failed sites
       var failures = d.values.CpH
         .filter(function(site){ return site.status === 'unconverted' })
@@ -254,7 +259,8 @@
           count:              d.values.CpG.length,
           methylatedCount:    methylations.length,
           percentMethylated:  methylations.length / d.values.CpG.length * 100,
-          methylatedSites:    methylations
+          methylatedSites:    methylations,
+          mixedSites:         mixedMethylations
         },
         CpH: {
           count:              d.values.CpH.length,
@@ -292,12 +298,14 @@
         // CpG and methylated CpG sites in this sequence
         var hasCpGSite         = dl.toMap(seq.stats.CpG.sites);
         var isMethylatedAtSite = dl.toMap(seq.stats.CpG.methylatedSites);
+        var isMixedAtSite      = dl.toMap(seq.stats.CpG.mixedSites);
 
         // Methylation status of this sequence at every CpG site in the alignment
         var siteColumns = alignmentSites.map(function(site) {
-          return isMethylatedAtSite[site] ? site :
-                         hasCpGSite[site] ?   "" :
-                                            "NA" ;
+          return isMethylatedAtSite[site] ?    site :
+                      isMixedAtSite[site] ? "mixed" :
+                         hasCpGSite[site] ?      "" :
+                                               "NA" ;
         });
 
         // Row for this sequence, matching the header row above
