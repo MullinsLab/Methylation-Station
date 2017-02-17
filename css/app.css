@@ -48,6 +48,10 @@ label input[type=file] {
   text-decoration: none;
 }
 
+.close-file .glyphicon {
+  top: 2px;
+}
+
 .actions {
   display: inline-block;
 }
