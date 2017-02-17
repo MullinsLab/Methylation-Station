@@ -5,9 +5,9 @@
     .module('methylation-station')
     .controller('app', app);
 
-  app.$inject = ['$http', '$scope', '$log'];
+  app.$inject = ['$http', '$location', '$scope', '$log'];
 
-  function app($http, $scope, $log) {
+  function app($http, $location, $scope, $log) {
     $log.debug("Attached app controller");
 
     this.alignment = null;
@@ -35,8 +35,12 @@
     // Load data and plot it
     this.loadURL = function(url, name) {
       if (!name) {
-        var path = url.split(/\//);
-        name = path[ path.length - 1 ];
+        if (url.match(/^data:/)) {
+          name = "Alignment";
+        } else {
+          var path = url.split(/\//);
+          name = path[ path.length - 1 ];
+        }
       }
 
       $http.get(url).then(
@@ -122,6 +126,10 @@
       }
       this.update();
     }
+
+    // Load any alignment specified by the URL
+    if ($location.search().load)
+      this.loadURL($location.search().load)
   }
 
 })();
