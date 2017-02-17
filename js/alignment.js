@@ -6,6 +6,7 @@
   function Alignment(fasta, name) {
     this.name = name;
     this.sequences = this.parse(fasta);
+    this.reference = this.sequences[0];
     this.assertValidAlignment();
 
     this.cpgSites      = this._cpgSites();
@@ -13,7 +14,7 @@
     this.analysisSites = this.cpgSites.concat(this.cphSites);
 
     // Make some properties above read-only
-    ["sequences", "cpgSites", "cphSites", "analysisSites"].forEach(function(prop) {
+    ["sequences", "reference", "cpgSites", "cphSites", "analysisSites"].forEach(function(prop) {
       Object.defineProperty(this, prop, { writable: false });
     }, this);
 
@@ -237,6 +238,10 @@
       var sequence = this.getSequence(d.key);
       if (!sequence)
         throw "Assertion failed: No sequence for id " + d.key;
+
+      // Make sure we always have an array even if there were no such sites
+      if (!d.values.CpG) d.values.CpG = []
+      if (!d.values.CpH) d.values.CpH = []
 
       // Methylated CpG sites in this sequence
       var methylations = d.values.CpG

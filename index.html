@@ -107,6 +107,10 @@
           <div ng-if="app.error" class="alert alert-danger" role="alert" ng-cloak>
             😟 {{ app.error }}
           </div>
+          <div ng-if="app.alignment.reference.stats.CpG.count === 0" class="alert alert-danger" role="alert" ng-cloak>
+            🤔 Hmmm, there don’t appear to be any CpG sites in this alignment!
+            Did you open the right file?
+          </div>
           <div class="alignment-name" ng-if="app.fasta.name" ng-cloak>
             <a ng-click="app.fasta = null" class="close-file small pull-right text-danger">
               close <span class="glyphicon glyphicon-remove-circle"></span>
