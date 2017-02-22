@@ -109,7 +109,7 @@ var MethylationVizSpec = {
       "zero": false
     },
 
-    // Fill colors for each site status.
+    // Fill and stroke colors and circle sizes for each site status.
     //
     // URL references are to SVG definitions external to this file, but
     // embedded in the HTML document.  They could live in a separate SVG file,
@@ -127,6 +127,24 @@ var MethylationVizSpec = {
       "type": "ordinal",
       "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
       "range": ["blue", "white", "url(#half-filled-blue) #ccf", "red"]
+    },
+    {
+      "name": "stroke",
+      "type": "ordinal",
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
+      "range": ["#333", "#333", "#333", "red"]
+    },
+    {
+      "name": "highlight-stroke",
+      "type": "ordinal",
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
+      "range": ["blue", "blue", "blue", "red"]
+    },
+    {
+      "name": "size",
+      "type": "ordinal",
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
+      "range": [50, 50, 50, 14]
     }
   ],
 
@@ -253,15 +271,11 @@ var MethylationVizSpec = {
                 {"field": "status", "scale": "fill"}
               ],
               "stroke": [
-                {"field": "status", "scale": "fill", "test": "datum.status === 'unconverted'"},
-                {"value": "blue", "test": "highlight === datum.sequenceId"},
-                {"value": "#333"}
+                {"field": "status", "scale": "highlight-stroke", "test": "highlight === datum.sequenceId"},
+                {"field": "status", "scale": "stroke"}
               ],
               "shape": {"value": "circle"},
-              "size": [
-                {"value": 14, "test": "datum.status === 'unconverted'"},
-                {"value": 50}
-              ]
+              "size": {"field": "status", "scale": "size"}
             }
           }
         }
