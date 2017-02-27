@@ -63,6 +63,12 @@
                   '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n';
 
                 var svg  = view.renderer().svg();
+                var defs = document.querySelector("svg#gradients defs").outerHTML;
+
+                // Embed external definitions for gradient fills at the end of
+                // the document.  Yes, this is doing string manip on XML.
+                svg = svg.replace(/(?=<\/svg>)/i, defs);
+
                 var blob = new Blob([svgHeader + svg], {type: 'image/svg+xml'});
                 return window.URL.createObjectURL(blob);
               };
