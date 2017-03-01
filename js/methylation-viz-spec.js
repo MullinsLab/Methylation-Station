@@ -119,32 +119,38 @@ var MethylationVizSpec = {
     {
       "name": "fill",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
-      "range": ["#333", "white", "url(#half-filled) #ccc", "red"]
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted", "partial"],
+      "range": ["#333", "white", "url(#half-filled) #ccc", "red", "url(#half-filled-red) #fcc"]
     },
     {
       "name": "highlight-fill",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
-      "range": ["blue", "white", "url(#half-filled-blue) #ccf", "red"]
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted", "partial"],
+      "range": ["blue", "white", "url(#half-filled-blue) #ccf", "red", "url(#half-filled-red) #fcc"]
     },
     {
       "name": "stroke",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
-      "range": ["#333", "#333", "#333", "red"]
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted", "partial"],
+      "range": ["#333", "#333", "#333", "red", "red"]
     },
     {
       "name": "highlight-stroke",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
-      "range": ["blue", "blue", "blue", "red"]
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted", "partial"],
+      "range": ["blue", "blue", "blue", "red", "red"]
+    },
+    {
+      "name": "stroke-width",
+      "type": "ordinal",
+      "domain": ["CpG", "CpH"],
+      "range": ["1px", "0.8px"]
     },
     {
       "name": "size",
       "type": "ordinal",
-      "domain": ["methylated", "unmethylated", "mixed", "unconverted"],
-      "range": [50, 50, 50, 14]
+      "domain": ["methylated", "unmethylated", "mixed", "unconverted", "partial"],
+      "range": [50, 50, 50, 14, 14]
     }
   ],
 
@@ -274,6 +280,7 @@ var MethylationVizSpec = {
                 {"field": "status", "scale": "highlight-stroke", "test": "highlight === datum.sequenceId"},
                 {"field": "status", "scale": "stroke"}
               ],
+              "strokeWidth": {"field": "type", "scale": "stroke-width"},
               "shape": {"value": "circle"},
               "size": {"field": "status", "scale": "size"}
             }

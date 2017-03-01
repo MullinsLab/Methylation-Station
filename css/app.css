@@ -75,6 +75,10 @@ label input[type=file] {
   max-width: 40em;
 }
 
+.explanation h1, .explanation h2, .explanation h3, .explanation h4, .explanation h5 {
+  margin-top: 2em;
+}
+
 .resources {
   margin-top: 4em;
 }

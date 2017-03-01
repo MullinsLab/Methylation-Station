@@ -86,21 +86,38 @@
           </p>
 
           <p>
-            At CpG sites, your sequences may use the standard
-            <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">IUPAC symbol</a>
-            <tt>Y</tt> to represent a position that’s observed as
-            both <tt>C</tt> and <tt>T</tt> in your sample population.  While
-            such sites will be plotted, they are not included when calculating
-            the methylation level of each sequence, because there is no way to
-            specify the relative ratio of <tt>C</tt> to <tt>T</tt>.  All other
-            ambiguous nucleotides are ignored, and not even <tt>Y</tt> is
-            considered at CpH sites.
-          </p>
-
-          <p>
             Try it out for yourself by
             <a ng-click="app.loadURL('examples/HXB2-ENV.fasta', 'Example: HXB2 ENV')">loading an example alignment</a>
             (or <a href="examples/HXB2-ENV.fasta">download the FASTA</a>).
+          </p>
+
+          <h4>Ambiguous sites</h4>
+          <p>
+            At CpG sites, your converted sequences may use the standard
+            <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">IUPAC symbol</a>
+            <tt>Y</tt> to represent a position that’s observed as
+            both <tt>C</tt> and <tt>T</tt> in your sample population.
+          </p>
+
+          <p>
+            While such sites will be plotted and counted towards the total
+            number of CpG sites, they are not considered methylated when
+            calculating the methylation level of each sequence, because there
+            is no simple way to specify the relative ratio of <tt>C</tt> to
+            <tt>T</tt>.
+          </p>
+
+          <p>
+            <tt>Y</tt> may also be used at CpH (non-CpG cytosine) sites in your
+            converted sequences, and in this case such sites are considered
+            conversion failures when calculating the conversion rate.  The
+            asymmetry of YpG vs. YpH handling is the result of differences in
+            what it means to be conservative when judging the methylation level
+            vs. the quality of the conversion.
+          </p>
+
+          <p>
+            All other ambiguous nucleotides are ignored.
           </p>
         </div>
         <div class="col col-sm-12 resources" ng-if="!app.fasta.name">
@@ -219,6 +236,12 @@
         <stop offset="50%"  stop-color="white" />
         <stop offset="50%"  stop-color="blue" />
         <stop offset="100%" stop-color="blue" />
+      </linearGradient>
+      <linearGradient id="half-filled-red" patternUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="white" />
+        <stop offset="50%"  stop-color="white" />
+        <stop offset="50%"  stop-color="red" />
+        <stop offset="100%" stop-color="red" />
       </linearGradient>
     </defs>
   </svg>

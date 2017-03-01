@@ -151,8 +151,8 @@
   // bisulfite-conversion process and thus confidence in the methylation data.
   //
   Alignment.prototype._cphSites = function() {
-    function findSites(sequence) {
-      var CpH   = /C(?!-*G)/gi,
+    function findSites(sequence, includeAmbig) {
+      var CpH   = includeAmbig ? /[CY](?!-*G)/gi : /C(?!-*G)/gi,
           sites = [],
           site;
 
@@ -162,9 +162,31 @@
       return sites;
     }
 
+    function sequenceSiteRecord(sequence, site) {
+      var nuc = sequence.seq.substr(site - 1, 1).toUpperCase();
+
+      // Reference sites which aren't C/T/Y in the converted sequence were
+      // not cytosines to begin with.
+      if (nuc !== 'C' && nuc !== 'T' && nuc !== 'Y')
+        return;
+
+      var status =
+        nuc === 'C' ? "unconverted" :
+        nuc === 'T' ?   "converted" :
+        nuc === 'Y' ?     "partial" :
+                               null ;
+
+      return {
+        sequence: sequence,
+        type:     "CpH",
+        site:     site,
+        status:   status
+      };
+    }
+
     // Collect reference CpH sites so we can check them in each converted sequence
     var reference       = this.sequences[0];
-    var referenceSites  = findSites(reference);
+    var referenceSites  = findSites(reference, false);
     var isReferenceSite = dl.toMap(referenceSites);
 
     var sequenceSites = this.sequences.slice(1).map(function(sequence, index) {
@@ -172,32 +194,19 @@
 
       // Check all reference sites against this converted sequence
       referenceSites.forEach(function(site) {
-        var nuc = sequence.seq.substr(site - 1, 1).toUpperCase();
-
-        // Reference sites which aren't C/T in the converted sequence were not
-        // cytosines to begin with.
-        if (nuc !== 'C' && nuc !== 'T')
-          return;
-
-        sites.push({
-          sequence: sequence,
-          type:     "CpH",
-          site:     site,
-          status:   nuc === 'C' ? "unconverted" : "converted"
-        });
+        var record = sequenceSiteRecord(sequence, site);
+        if (record)
+          sites.push(record);
       });
 
       // Add in any novel CpH for this sequence which failed.  Note that we
-      // can't tell apart novel CpGs which were converted vs. novel TpGs.
-      findSites(sequence)
+      // can't tell apart novel CpHs which were converted vs. novel TpHs.
+      findSites(sequence, true)
         .filter(function(site){ return !isReferenceSite[site] })
         .forEach(function(site) {
-          sites.push({
-            sequence: sequence,
-            type:     "CpH",
-            site:     site,
-            status:   "unconverted"
-          });
+          var record = sequenceSiteRecord(sequence, site);
+          if (record)
+            sites.push(record);
         });
 
       return sites;
@@ -254,7 +263,7 @@
 
       // Failed sites
       var failures = d.values.CpH
-        .filter(function(site){ return site.status === 'unconverted' })
+        .filter(function(site){ return site.status !== 'converted' })
         .map(dl.accessor('site'));
 
       // Add calculated stats to our stored sequences
@@ -323,7 +332,9 @@
           seq.stats.CpH.count,
           seq.stats.CpH.unconvertedCount,
           seq.stats.CpH.percentConverted.toFixed(1),
-          seq.stats.CpH.failedSites.join(', ')
+          seq.stats.CpH.failedSites
+            .map(function(site){ return seq.seq.substr(site - 1, 1).toUpperCase() + site })
+            .join(', ')
         ]);
       })
     );
