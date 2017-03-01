@@ -71,8 +71,12 @@ label input[type=file] {
   display: inline-block;
 }
 
-.explanation p {
+.explanation p, .resources p {
   max-width: 40em;
+}
+
+.resources {
+  margin-top: 4em;
 }
 
 methylation-viz {

@@ -103,6 +103,16 @@
             (or <a href="examples/HXB2-ENV.fasta">download the FASTA</a>).
           </p>
         </div>
+        <div class="col col-sm-12 resources" ng-if="!app.fasta.name">
+          <h4>Other resources</h4>
+          <p>
+            Other tools for methylation analysis and
+            visualization include
+            <a href="http://services.ibc.uni-stuttgart.de/BDPC/BISMA/index_repetitive.php#AlignedSequences">BISMA</a> and
+            <a href="http://biq-analyzer.bioinf.mpi-inf.mpg.de">BiQ Analyzer's</a>
+            <a href="http://biq-analyzer.bioinf.mpi-inf.mpg.de/tools/MethylationDiagrams/">diagram tool</a>.
+          </p>
+        </div>
         <div class="col col-sm-12 col-md-9">
           <div ng-if="app.error" class="alert alert-danger" role="alert" ng-cloak>
             😟 {{ app.error }}
