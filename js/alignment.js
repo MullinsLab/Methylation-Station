@@ -40,9 +40,13 @@
           .replace(/^>/, '')
           .split(/\s+/);
 
+        var id          = name[0];
+        var description = name.slice(1).join(" ");
+
         sequence = {
-          id:          name[0],
-          description: name.slice(1).join(" "),
+          id:          id,
+          description: description,
+          tags:        this.parseTags(description),
           index:       index++,
           seq:         ""
         };
@@ -54,12 +58,29 @@
       else {
         throw "No sequence name found";
       }
-    });
+    }, this);
 
     if (sequence)
       fasta.push(sequence);
 
     return fasta;
+  };
+
+
+  // Parse [key=value] tags from a description line
+  //
+  Alignment.prototype.parseTags = function(description) {
+    if (!description)
+      return {};
+
+    var Tag  = /\[(.+?)\s*=\s*(.+?)\]/g,
+        tags = {},
+        match;
+
+    while (match = Tag.exec(description))
+      tags[match[1]] = match[2];
+
+    return tags
   };
 
 
