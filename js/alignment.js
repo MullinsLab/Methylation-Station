@@ -38,11 +38,11 @@
 
         var name = line
           .replace(/^>/, '')
-          .split(/\s+/, 2);
+          .split(/\s+/);
 
         sequence = {
           id:          name[0],
-          description: name[1],
+          description: name.slice(1).join(" "),
           index:       index++,
           seq:         ""
         };
