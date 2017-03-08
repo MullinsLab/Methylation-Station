@@ -83,11 +83,11 @@ label input[type=file] {
   margin-top: 4em;
 }
 
-methylation-viz {
+methylation-diagram {
   display: block;
 }
 
-methylation-viz svg {
+methylation-diagram svg {
   overflow: visible !important;
 }
 

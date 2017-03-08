@@ -3,11 +3,11 @@
 
   angular
     .module('methylation-station')
-    .directive('methylationViz', methylationViz);
+    .directive('methylationDiagram', methylationDiagram);
 
-  methylationViz.$inject = ['debounce', '$log'];
+  methylationDiagram.$inject = ['debounce', '$log'];
 
-  function methylationViz(debounce, $log) {
+  function methylationDiagram(debounce, $log) {
     return {
       restrict: 'E',
       replace: false,
@@ -17,7 +17,7 @@
         rendered: '='
       },
       link: function (elementScope, element, attrs) {
-        // When our input data changes, re-render the Vega viz.
+        // When our input data changes, re-render the Vega spec.
         elementScope.$watch('data', function(newValue, oldValue) {
           if (!newValue) {
             elementScope.rendered = false;
@@ -27,7 +27,7 @@
             return;
           }
 
-          vg.parse.spec(MethylationVizSpec, function(error, chart) {
+          vg.parse.spec(MethylationDiagramSpec, function(error, chart) {
             elementScope.$apply(function(scope) {
               if (error) {
                 $log.error("Error parsing Vega spec: " + error);

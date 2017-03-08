@@ -1,5 +1,5 @@
 // vim: set ft=javascript sw=2 ts=2 :
-var MethylationVizSpec = {
+var MethylationDiagramSpec = {
   // We don't use a fixed height.  It's dynamic based on the number of
   // sequences in the alignment.  The width is a default which is dynamically
   // modified by the application to fit the visualization container's width.

@@ -38,8 +38,8 @@
               <div class="actions">
                 <a class="btn btn-success" target="_blank"
                   download="{{ app.alignment.name }}.svg"
-                  ng-click="$event.target.href = !viz.rendered ? '' : viz.toURL()"
-                  ng-disabled="!viz.rendered">
+                  ng-click="$event.target.href = !diagram.rendered ? '' : diagram.toURL()"
+                  ng-disabled="!diagram.rendered">
                   <span class="glyphicon glyphicon-picture"></span>
                   Export image as SVG
                 </a>
@@ -166,16 +166,16 @@
         </div>
       </div>
 
-      <!-- Alignment "lollipop"-esque visualization -->
+      <!-- Alignment "lollipop"-esque diagram -->
       <div class="row">
         <div class="col col-sm-12 col-md-9">
           <figure>
-            <methylation-viz
+            <methylation-diagram
               data="app.alignment.filteredSites"
-              rendered="viz.rendered"
-              to-url="viz.toURL">
-            </methylation-viz>
-            <figcaption ng-if="viz.rendered" ng-cloak>
+              rendered="diagram.rendered"
+              to-url="diagram.toURL">
+            </methylation-diagram>
+            <figcaption ng-if="diagram.rendered" ng-cloak>
               <p>
                 Black circles are methylated CpG sites.  White circles are
                 unmethylated CpG sites.  Half-filled black circles are mixed
@@ -195,10 +195,10 @@
             </figcaption>
           </figure>
         </div>
-        <div class="col col-sm-6 col-md-3" ng-if="viz.rendered" ng-cloak>
+        <div class="col col-sm-6 col-md-3" ng-if="diagram.rendered" ng-cloak>
           <div class="panel panel-default small">
             <div class="panel-heading">
-              Visualization options
+              Diagram options
             </div>
             <div class="panel-body">
               <div class="checkbox">
@@ -280,7 +280,7 @@
   <script src="js/vendor/datalib-0.1.14.min.js"></script>
   <script src="js/vendor/angular-1.6.1.min.js"></script>
   <script src="js/vendor/angular-debounce-1.1.0.min.js"></script>
-  <script src="js/methylation-viz-spec.js"></script>
+  <script src="js/methylation-diagram-spec.js"></script>
   <script src="js/alignment.js"></script>
   <script src="js/fileModel.js"></script>
   <script src="js/main.js"></script>
