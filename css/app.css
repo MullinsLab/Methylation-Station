@@ -104,6 +104,37 @@ figcaption {
   margin-bottom: 0;
 }
 
+.heatmap-options label {
+  font-weight: normal;
+}
+
+table.heatmap {
+  font-size: 14px;
+}
+
+table.heatmap > tbody > tr > td,
+table.heatmap > tbody > tr > th {
+  border-top: none;
+}
+
+table.heatmap > thead > tr > th,
+table.heatmap > tbody > tr > td {
+  text-align: center;
+}
+
+table.heatmap > tbody > tr > th small {
+  font-weight: normal;
+  color: #777;
+}
+
+table.heatmap th.avg, table.heatmap td.avg {
+  border-left: 4px solid white;
+}
+
+table.heatmap th, table.heatmap td {
+  white-space: nowrap;
+}
+
 .footer {
   margin-top: 5em;
   font-size: 14px;

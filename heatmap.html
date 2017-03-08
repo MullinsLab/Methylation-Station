@@ -1,0 +1,60 @@
+<table class="table table-condensed heatmap" ng-if="heatmap.groups" ng-cloak>
+  <thead>
+    <tr>
+      <th></th>
+      <th ng-repeat="site in heatmap.groups[0].values">
+        {{ site.key }}
+      </th>
+      <th class="avg"><abbr title="Mean per-site methylation level">Mean</abbr></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="group in heatmap.groups | orderBy: [heatmap.orderBy, 'key']">
+      <th>
+        {{ group.key === "undefined" ? "Unknown" : group.key }}
+        <small>(n={{ group.values.sequenceCount | number: 0 }})</small>
+      </th>
+      <td ng-repeat="site in group.values"
+          style="background-color: {{ heatmap.colorScale(site.values.fractionMethylated) }}">
+        {{ site.values.fractionMethylated * 100 | number: 0 }}%
+      </td>
+      <td class="avg" style="background-color: {{ heatmap.colorScale(group.values.meanMethylation) }}">
+        {{ group.values.meanMethylation * 100 | number: 0 }}%
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Use SVG to draw a legend for the color scale -->
+<svg ng-if="heatmap.groups" ng-cloak
+     ng-init="svgWidth = 300"
+     ng-attr-width="{{ svgWidth }}"
+     height="50"
+     class="heatmap-legend center-block"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <defs>
+    <linearGradient id="heatmap-scale">
+      <stop ng-repeat="i in heatmap.colorScale.domain()"
+            ng-attr-offset="{{ i * 100 }}%"
+            ng-attr-stop-color="{{ heatmap.colorScale(i) }}" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" ng-attr-width="{{ svgWidth }}" height="10" fill="url(#heatmap-scale)" />
+  <text ng-repeat="i in heatmap.colorScale.domain()"
+        ng-attr-x="{{ svgWidth * i }}" y="15"
+        ng-attr-text-anchor="{{
+          i === 0 ?  'start' :
+          i === 1 ?    'end' :
+                    'middle' ;
+        }}"
+        alignment-baseline="hanging"
+        font-size="12px">
+    {{ i * 100 }}%
+  </text>
+  <text ng-attr-x="{{ svgWidth / 2 }}" y="30"
+        text-anchor="middle"
+        alignment-baseline="hanging"
+        font-size="12px">
+    Methylation level
+  </text>
+</svg>

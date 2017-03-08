@@ -128,6 +128,33 @@
             <p>
               All other ambiguous nucleotides are ignored.
             </p>
+
+            <h4>Grouping sequences</h4>
+            <p>
+              The heatmap can optionally group your sequences together by a given
+              field, such as sample, tissue, culture, patient, or any other
+              property you provide.
+            </p>
+            <p>
+              In order to group sequences, each sequence name in your FASTA file
+              must be tagged using a special syntax which assigns the sequence a
+              value for a field name.  That syntax looks like this:
+            </p>
+            <pre>&gt;sequence_name [field=value] [subject=B] [identity=Cluster 1]</pre>
+            <p>
+              The first tag must be separated from the rest of the sequence name
+              by a space.  You may use any field name and value you want — even
+              spaces are ok — as long your tag is surrounded by square brackets
+              (<tt>[]</tt>) and split by an equals sign (<tt>=</tt>).  The field
+              names will automatically show up in the grouping dropdown within
+              the <i>Heatmap options</i> panel.
+            </p>
+            <p>
+              Take a look at the plain text of the
+              <a href="examples/HXB2-ENV.fasta">example FASTA</a> to see a full
+              alignment where each sequence has two tagged fields, “subject” and
+              “identity”.
+            </p>
           </div>
 
           <div class="resources">
@@ -232,6 +259,64 @@
         </div>
       </div>
 
+      <!-- Alignment heatmap -->
+      <div class="row" ng-if="app.alignment" ng-cloak>
+        <div class="col col-sm-12 col-md-9">
+          <h4>Summary heatmap</h4>
+          <figure>
+            <methylation-heatmap
+              alignment="app.alignment"
+              order-by="heatmap.orderBy"
+              group-by="heatmap.groupBy"
+              group-by-fields="heatmap.groupByFields"
+              groups="heatmap.groups">
+            </methylation-heatmap>
+            <figcaption>
+              <p>
+                Reference CpG sites are shown across the top.  Groups of
+                converted sequences are shown along the left side.  Percentages
+                and colors indicate the methylation level of a particular site
+                within a group of sequences.  The final column is the mean
+                per-site methylation level for the given group.
+              </p>
+            </figcaption>
+          </figure>
+        </div>
+        <div class="col col-sm-6 col-md-3">
+          <div class="panel panel-default small heatmap-options">
+            <div class="panel-heading">
+              Heatmap options
+            </div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label for="group-sequences-by">Group sequences</label>
+                <select ng-model="heatmap.groupBy"
+                        ng-options="tag.path as 'by ' + tag.name for tag in heatmap.groupByFields | orderBy: 'name'"
+                        ng-disabled="!heatmap.groupByFields.length"
+                        class="form-control"
+                        id="group-sequences-by">
+                  <option value="">all together</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="heatmap-order">Order by</label>
+                <select ng-model="heatmap.orderBy"
+                        ng-init="heatmap.orderBy = 'key'"
+                        ng-disabled="heatmap.groups.length <= 1"
+                        class="form-control" id="heatmap-order">
+                  <!--
+                    These values are property paths as strings, interpreted by
+                    dl.accessor(), on a heatmap sequence group object.
+                  -->
+                  <option value="key">group name</option>
+                  <option value="values.meanMethylation">mean methylation</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Footer -->
       <div class="footer row">
         <div class="col col-sm-12 col-md-8">
@@ -288,5 +373,6 @@
   <script src="js/main.js"></script>
   <script src="js/controller.js"></script>
   <script src="js/diagram.js"></script>
+  <script src="js/heatmap-table.js"></script>
 </html>
 <!-- vi: set ts=2 sw=2 : -->
