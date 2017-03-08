@@ -67,77 +67,79 @@
 
       <!-- About and help text -->
       <div class="row">
-        <div class="col col-sm-12 explanation" ng-if="!app.fasta.name">
-          <p>
-            This app is for analyzing and visualizing DNA methylation data.
-          </p>
+        <div class="col col-sm-12" ng-if="!app.fasta.name">
+          <div class="explanation">
+            <p>
+              This app is for analyzing and visualizing DNA methylation data.
+            </p>
 
-          <p>
-            Get started by loading a
-            <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">multiple-sequence
-            alignment</a> in <a href="https://en.wikipedia.org/wiki/FASTA_format">FASTA format</a>.
-            The first sequence in the alignment should be an (unconverted)
-            reference sequence.  The remaining sequences must be
-            <a href="https://en.wikipedia.org/wiki/Bisulfite_sequencing">bisulfite-converted</a>.
-          </p>
+            <p>
+              Get started by loading a
+              <a href="https://en.wikipedia.org/wiki/Multiple_sequence_alignment">multiple-sequence
+              alignment</a> in <a href="https://en.wikipedia.org/wiki/FASTA_format">FASTA format</a>.
+              The first sequence in the alignment should be an (unconverted)
+              reference sequence.  The remaining sequences must be
+              <a href="https://en.wikipedia.org/wiki/Bisulfite_sequencing">bisulfite-converted</a>.
+            </p>
 
-          <p>
-            Sequence names must be unique within the alignment.
-          </p>
+            <p>
+              Sequence names must be unique within the alignment.
+            </p>
 
-          <p>
-            All sequences should read 5′ → 3′ left to right, so that
-            <a href="https://en.wikipedia.org/wiki/CpG_site">CpG sites</a>
-            appear as <tt>CG</tt> in your file.  Sequence contexts other than CpG,
-            <a href="https://en.wikipedia.org/wiki/DNA_methylation#In_plants">such
-            as those occurring in plants</a>, are not currently considered.
-          </p>
+            <p>
+              All sequences should read 5′ → 3′ left to right, so that
+              <a href="https://en.wikipedia.org/wiki/CpG_site">CpG sites</a>
+              appear as <tt>CG</tt> in your file.  Sequence contexts other than CpG,
+              <a href="https://en.wikipedia.org/wiki/DNA_methylation#In_plants">such
+              as those occurring in plants</a>, are not currently considered.
+            </p>
 
-          <p>
-            Try it out for yourself by
-            <a ng-click="app.loadURL('examples/HXB2-ENV.fasta', 'Example: HXB2 ENV')">loading an example alignment</a>
-            (or <a href="examples/HXB2-ENV.fasta">download the FASTA</a>).
-          </p>
+            <p>
+              Try it out for yourself by
+              <a ng-click="app.loadURL('examples/HXB2-ENV.fasta', 'Example: HXB2 ENV')">loading an example alignment</a>
+              (or <a href="examples/HXB2-ENV.fasta">download the FASTA</a>).
+            </p>
 
-          <h4>Ambiguous sites</h4>
-          <p>
-            At CpG sites, your converted sequences may use the standard
-            <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">IUPAC symbol</a>
-            <tt>Y</tt> to represent a position that’s observed as
-            both <tt>C</tt> and <tt>T</tt> in your sample population.
-          </p>
+            <h4>Ambiguous sites</h4>
+            <p>
+              At CpG sites, your converted sequences may use the standard
+              <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">IUPAC symbol</a>
+              <tt>Y</tt> to represent a position that’s observed as
+              both <tt>C</tt> and <tt>T</tt> in your sample population.
+            </p>
 
-          <p>
-            While such sites will be plotted and counted towards the total
-            number of CpG sites, they are not considered methylated when
-            calculating the methylation level of each sequence, because there
-            is no simple way to specify the relative ratio of <tt>C</tt> to
-            <tt>T</tt>.
-          </p>
+            <p>
+              While such sites will be plotted and counted towards the total
+              number of CpG sites, they are not considered methylated when
+              calculating the methylation level of each sequence, because there
+              is no simple way to specify the relative ratio of <tt>C</tt> to
+              <tt>T</tt>.
+            </p>
 
-          <p>
-            <tt>Y</tt> may also be used at CpH (non-CpG cytosine) sites in your
-            converted sequences, and in this case such sites are considered
-            conversion failures when calculating the conversion rate.  The
-            asymmetry of YpG vs. YpH handling is the result of differences in
-            what it means to be conservative when judging the methylation level
-            vs. the quality of the conversion.
-          </p>
+            <p>
+              <tt>Y</tt> may also be used at CpH (non-CpG cytosine) sites in your
+              converted sequences, and in this case such sites are considered
+              conversion failures when calculating the conversion rate.  The
+              asymmetry of YpG vs. YpH handling is the result of differences in
+              what it means to be conservative when judging the methylation level
+              vs. the quality of the conversion.
+            </p>
 
-          <p>
-            All other ambiguous nucleotides are ignored.
-          </p>
-        </div>
+            <p>
+              All other ambiguous nucleotides are ignored.
+            </p>
+          </div>
 
-        <div class="col col-sm-12 resources" ng-if="!app.fasta.name">
-          <h4>Other resources</h4>
-          <p>
-            Other tools for methylation analysis and
-            visualization include
-            <a href="http://services.ibc.uni-stuttgart.de/BDPC/BISMA/index_repetitive.php#AlignedSequences">BISMA</a> and
-            <a href="http://biq-analyzer.bioinf.mpi-inf.mpg.de">BiQ Analyzer’s</a>
-            <a href="http://biq-analyzer.bioinf.mpi-inf.mpg.de/tools/MethylationDiagrams/">diagram tool</a>.
-          </p>
+          <div class="resources">
+            <h4>Other resources</h4>
+            <p>
+              Other tools for methylation analysis and
+              visualization include
+              <a href="http://services.ibc.uni-stuttgart.de/BDPC/BISMA/index_repetitive.php#AlignedSequences">BISMA</a> and
+              <a href="http://biq-analyzer.bioinf.mpi-inf.mpg.de">BiQ Analyzer’s</a>
+              <a href="http://biq-analyzer.bioinf.mpi-inf.mpg.de/tools/MethylationDiagrams/">diagram tool</a>.
+            </p>
+          </div>
         </div>
       </div>
 

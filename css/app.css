@@ -71,7 +71,7 @@ label input[type=file] {
   display: inline-block;
 }
 
-.explanation p, .resources p {
+.explanation, .resources {
   max-width: 40em;
 }
 
