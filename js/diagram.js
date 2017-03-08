@@ -3,11 +3,16 @@
 
   angular
     .module('methylation-station')
-    .directive('methylationDiagram', methylationDiagram);
+    .directive('methylationDiagram', directive);
 
-  methylationDiagram.$inject = ['debounce', '$log'];
 
-  function methylationDiagram(debounce, $log) {
+  // The "lollipop"-esque alignment diagram showing methylation status.  This
+  // directive is a glue component bridging our Angular app with the Vega
+  // runtime.
+  //
+  directive.$inject = ['debounce', '$log'];
+
+  function directive(debounce, $log) {
     return {
       restrict: 'E',
       replace: false,
