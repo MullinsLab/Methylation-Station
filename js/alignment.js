@@ -47,6 +47,7 @@
           id:          id,
           description: description,
           tags:        this.parseTags(description),
+          isReference: index === 0,
           index:       index++,
           seq:         ""
         };
@@ -118,7 +119,7 @@
   //
   Alignment.prototype._cpgSites = function() {
     var reference = this.sequences[0];
-    var sites     = this.sequences.map(function(sequence, index){
+    var sites     = this.sequences.map(function(sequence) {
       var CpG   = /[CTY](?=-*G)/gi,
           sites = [],
           site;
@@ -135,11 +136,11 @@
           continue;
 
         var status =
-            index ===  0  ?    "reference" :
-          siteNuc === 'C' ?   "methylated" :
-          siteNuc === 'T' ? "unmethylated" :
-          siteNuc === 'Y' ?        "mixed" :
-                                      null ;
+          sequence.isReference ?    "reference" :
+               siteNuc === 'C' ?   "methylated" :
+               siteNuc === 'T' ? "unmethylated" :
+               siteNuc === 'Y' ?        "mixed" :
+                                           null ;
 
         sites.push({
           sequence: sequence,
@@ -210,7 +211,7 @@
     var referenceSites  = findSites(reference, false);
     var isReferenceSite = dl.toMap(referenceSites);
 
-    var sequenceSites = this.sequences.slice(1).map(function(sequence, index) {
+    var sequenceSites = this.sequences.slice(1).map(function(sequence) {
       var sites = [];
 
       // Check all reference sites against this converted sequence

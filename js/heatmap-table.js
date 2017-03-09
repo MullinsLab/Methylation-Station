@@ -98,7 +98,7 @@
       var referenceSites = alignment.reference.stats.CpG.sites;
 
       var data = alignment.analysisSites
-        .filter(function(d){ return d.sequence.index !== 0 })
+        .filter(function(d){ return !d.sequence.isReference })
         .filter(function(d){ return d.type === "CpG" && d.isInReference });
 
       // Build a nested structure first by the grouping field and then within

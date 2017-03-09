@@ -80,7 +80,7 @@ var MethylationDiagramSpec = {
       "name": "reference",
       "source": "alignmentBySequence",
       "transform": [
-        { "type": "filter", "test": "datum.sequence.index === 0" },
+        { "type": "filter", "test": "datum.sequence.isReference" },
         { "type": "formula", "field": "length", "expr": "datum.sequence.seq.length" }
       ]
     },
@@ -91,7 +91,7 @@ var MethylationDiagramSpec = {
       "name": "sequences",
       "source": "alignmentBySequence",
       "transform": [
-        { "type": "filter", "test": "datum.sequence.index > 0" }
+        { "type": "filter", "test": "!datum.sequence.isReference" }
       ]
     }
   ],

@@ -82,8 +82,8 @@
 
       this.alignment.sequences
         .sort(function(a,b) {
-          if (a.index === 0) return -1;
-          if (b.index === 0) return 1;
+          if (a.isReference) return -1;
+          if (b.isReference) return 1;
           return sortKey(a) - sortKey(b)
               || a.index - b.index;
         })
