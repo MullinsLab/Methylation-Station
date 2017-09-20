@@ -264,6 +264,12 @@
               </div>
               <div class="checkbox">
                 <label>
+                  <input type="checkbox" ng-model="diagram.signals.hideSequenceLabels">
+                  Hide sequence labels
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
                   <input type="checkbox" ng-model="app.sortByMethylation" ng-change="app.update()">
                   Sort by percent methylated
                 </label>

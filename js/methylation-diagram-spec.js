@@ -25,7 +25,8 @@ var MethylationDiagramSpec = {
       ]
     },
     { "name": "siteLabelField",  "init": "site" },
-    { "name": "siteLabelOffset", "init": 0 }
+    { "name": "siteLabelOffset", "init": 0 },
+    { "name": "hideSequenceLabels", "init": false }
   ],
 
   "data": [
@@ -175,7 +176,8 @@ var MethylationDiagramSpec = {
           // overlap text below.  This is desired when a sequence name is
           // highlighted and the font size increased such that minor overlap
           // occurs.
-          {"type": "sort", "by": "-displayIndex"}
+          {"type": "sort", "by": "-displayIndex"},
+          {"type": "filter", "test": "!hideSequenceLabels"}
         ]
       },
       "properties": {
@@ -223,7 +225,10 @@ var MethylationDiagramSpec = {
       "name": "referenceName",
       "type": "text",
       "from": {
-        "data": "reference"
+        "data": "reference",
+        "transform": [
+          {"type": "filter", "test": "!hideSequenceLabels"}
+        ]
       },
       "properties": {
         "update": {

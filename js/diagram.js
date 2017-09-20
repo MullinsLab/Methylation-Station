@@ -94,13 +94,24 @@
 
             if (scope.signals) {
               scope.$watchCollection(
-                ()        => { return scope.signals },
-                (signals) => {
+                ()                    => { return scope.signals },
+                (signals, oldSignals) => {
                   $log.debug("Updating signals: ", signals);
 
                   Object.keys(signals).forEach((k) => {
                     view.signal(k, signals[k]);
                   });
+
+                  // Force the view to re-layout the viz if we change the
+                  // hideSequenceLabels signal, as the view doesn't otherwise
+                  // use the new width available.  This is expensive time-wise,
+                  // so we only do it when necessary.
+                  if (signals.hideSequenceLabels != oldSignals.hideSequenceLabels) {
+                    var w = view.width();
+                    view.width(0).update();
+                    view.width(w);
+                  }
+
                   view.update();
                 }
               );
