@@ -165,7 +165,7 @@ var MethylationDiagramSpec = {
   ],
 
   "marks": [
-    // Draw sequence names on the left hand side
+    // Draw sequence names on the right hand side
     {
       "name": "sequenceName",
       "type": "text",
