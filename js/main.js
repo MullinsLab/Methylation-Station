@@ -7,6 +7,7 @@
       'fileModel',
       'rt.debounce'
     ])
+    .filter('abs', () => { return (i) => { return Math.abs(i) } })
     .config(configure)
     .run(init);
 

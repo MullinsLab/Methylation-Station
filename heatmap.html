@@ -3,7 +3,11 @@
     <tr>
       <th></th>
       <th ng-repeat="site in heatmap.groups[0].values">
-        {{ site.key }}
+        {{
+            heatmap.siteLabelField
+              ? site[ heatmap.siteLabelField ] + (heatmap.siteLabelOffset || '')
+              : ''
+        }}
       </th>
       <th class="avg"><abbr title="Mean per-site methylation level">Mean</abbr></th>
     </tr>

@@ -23,7 +23,9 @@ var MethylationDiagramSpec = {
         {"type": "@sequenceAxis:mouseover", "expr": "datum.sequenceId"},
         {"type": "@sequenceAxis:mouseout",  "expr": "null"}
       ]
-    }
+    },
+    { "name": "siteLabelField",  "init": "site" },
+    { "name": "siteLabelOffset", "init": 0 }
   ],
 
   "data": [
@@ -69,7 +71,14 @@ var MethylationDiagramSpec = {
       "source": "alignment",
       "transform": [
         { "type": "filter", "test": "datum.type === 'CpG'" },
-        { "type": "aggregate", "groupby": ["site"], "summarize": {"*": "count"} }
+        { "type": "aggregate", "groupby": ["site"], "summarize": {"*": "count"} },
+        { "type": "sort", "by": ["site"] },
+        { "type": "rank" },
+        {
+          "type": "formula",
+          "field": "_siteLabel",
+          "expr": "if(siteLabelField, datum[siteLabelField] + (siteLabelOffset || ''), '')"
+        }
       ]
     },
 
@@ -238,7 +247,7 @@ var MethylationDiagramSpec = {
       },
       "properties": {
         "update": {
-          "text": {"field": "site"},
+          "text": {"field": "_siteLabel"},
           "fontSize": {"value": 10},
           "fill": {"value": "#333"},
           "align": {"value": "left"},

@@ -26,7 +26,9 @@
         groupBy: '=?',
         groupByFields: '=?',
         groups: '=?',
-        orderBy: '=?'
+        orderBy: '=?',
+        siteLabelField: '<?',
+        siteLabelOffset: '<?'
       }
     }
   }
@@ -97,9 +99,20 @@
       // usually aren't shared across the alignment.
       var referenceSites = alignment.reference.stats.CpG.sites;
 
-      var data = alignment.analysisSites
-        .filter(function(d){ return !d.sequence.isReference })
-        .filter(function(d){ return d.type === "CpG" && d.isInReference });
+      // Collect all unique CpG sites in the alignment and rank them for
+      // ordinal numbering.  This is for fetching the overall alignment rank of
+      // individual reference sites.
+      var alignmentSiteRank = new Map(
+        dl.unique(
+            alignment.cpgSites
+              .map((s) => { return s.site })
+              .sort((a,b) => { return a - b })
+          )
+          .map((s,i) => { return [s, i + 1] })
+      );
+
+      var data = alignment.cpgSites
+        .filter(function(site){ return !site.sequence.isReference && site.isInReference });
 
       // Build a nested structure first by the grouping field and then within
       // each group, by site.  For each alignment site, the sequence sites are
@@ -112,9 +125,11 @@
               .key(dl.accessor("site"))
               .map(values);
 
-          var sites = referenceSites.map(function(refSite) {
+          var sites = referenceSites.map(function(refSite, index) {
             var site = {
               key: refSite,
+              site: refSite,                         // Used in the UI for column headers
+              rank: alignmentSiteRank.get(refSite),  // …ditto
               values: {
                 count:           (valuesBySite[refSite] || []).length,
                 methylatedCount: (valuesBySite[refSite] || [])

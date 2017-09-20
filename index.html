@@ -202,7 +202,9 @@
             <methylation-diagram
               data="app.alignment.filteredSites"
               rendered="diagram.rendered"
-              to-url="diagram.toURL">
+              to-url="diagram.toURL"
+              signals="diagram.signals"
+              ng-init="diagram.signals = {}">
             </methylation-diagram>
             <figcaption ng-if="diagram.rendered" ng-cloak>
               <p>
@@ -215,7 +217,19 @@
                 failures<em ng-if="app.filter.hideCpH"> (currently hidden)</em>.
                 Half-filled red cirles are partially converted sites.
 
-                Site locations refer to alignment base positions.
+                <span ng-switch="diagram.signals.siteLabelField">
+                  <span ng-switch-when="site">
+                    Site locations refer to alignment base positions<em
+                      ng-if="diagram.signals.siteLabelOffset">
+                        {{ diagram.signals.siteLabelOffset > 0 ? 'plus' : 'minus' }}
+                        {{ diagram.signals.siteLabelOffset | abs | number: 0 }}</em>.
+                  </span>
+                  <span ng-switch-when="rank">
+                    Sites are numbered in order from left to right, starting at
+                    {{ 1 + diagram.signals.siteLabelOffset }}.
+                  </span>
+                  <span ng-switch-default></span>
+                </span>
               </p>
               <p>
                 Resize your browser window to make the image wider.  Increase
@@ -225,7 +239,7 @@
           </figure>
         </div>
         <div class="col col-sm-6 col-md-3" ng-if="diagram.rendered" ng-cloak>
-          <div class="panel panel-default small">
+          <div class="panel panel-default small options-panel">
             <div class="panel-heading">
               Diagram options
             </div>
@@ -254,6 +268,24 @@
                   Sort by percent methylated
                 </label>
               </div>
+              <div class="form-group">
+                <label for="cpg-sites-label">Label CpG sites with</label>
+                <select ng-model="diagram.signals.siteLabelField"
+                        ng-init="diagram.signals.siteLabelField = 'site'"
+                        class="form-control"
+                        id="cpg-sites-label">
+                  <option value="">nothing</option>
+                  <option value="rank">site number</option>
+                  <option value="site">alignment position</option>
+                </select>
+                <div class="input-group pull-right" style="max-width: 12em; margin-top: 12px">
+                  <span class="input-group-addon">offset by</span>
+                  <input type="number" class="form-control text-right"
+                    ng-model="diagram.signals.siteLabelOffset"
+                    ng-init="diagram.signals.siteLabelOffset = 0"
+                    ng-disabled="!diagram.signals.siteLabelField">
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -269,7 +301,9 @@
               order-by="heatmap.orderBy"
               group-by="heatmap.groupBy"
               group-by-fields="heatmap.groupByFields"
-              groups="heatmap.groups">
+              groups="heatmap.groups"
+              site-label-field="diagram.signals.siteLabelField"
+              site-label-offset="diagram.signals.siteLabelOffset">
             </methylation-heatmap>
             <figcaption>
               <p>
@@ -283,7 +317,7 @@
           </figure>
         </div>
         <div class="col col-sm-6 col-md-3">
-          <div class="panel panel-default small heatmap-options">
+          <div class="panel panel-default small options-panel">
             <div class="panel-heading">
               Heatmap options
             </div>

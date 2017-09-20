@@ -19,7 +19,8 @@
       scope: {
         data: '<',
         toUrl: '=?',
-        rendered: '=?'
+        rendered: '=?',
+        signals: '<?'
       },
       link: function (elementScope, element, attrs) {
         $log.debug("Parsing Vega spec");
@@ -90,6 +91,20 @@
               debounce(500, scope.$apply.bind(scope)),
               false
             );
+
+            if (scope.signals) {
+              scope.$watchCollection(
+                ()        => { return scope.signals },
+                (signals) => {
+                  $log.debug("Updating signals: ", signals);
+
+                  Object.keys(signals).forEach((k) => {
+                    view.signal(k, signals[k]);
+                  });
+                  view.update();
+                }
+              );
+            }
 
             // Define a toUrl function exported into our scope which returns a URL
             // pointing to the SVG contents of the Vega view.
