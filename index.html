@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/app.css" media="screen" type="text/css">
     <link rel="icon" type="image/png" href="favicon.png">
   </head>
-  <body>
+  <body file-drop file-name="app.fasta.name" file-data="app.fasta.text" file-data-as="Text">
     <div class="container-fluid">
 
       <!-- Header -->
@@ -361,6 +361,10 @@
       </linearGradient>
     </defs>
   </svg>
+
+  <div id="file-drop-screen" class="hidden">
+    <span class="glyphicon glyphicon-open-file text-primary"></span>
+  </div>
 
   <script src="js/vendor/d3-3.5.5.min.js"></script>
   <script src="js/vendor/vega-2.6.5.min.js"></script>

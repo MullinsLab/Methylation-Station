@@ -139,3 +139,16 @@ table.heatmap th, table.heatmap td {
   margin-top: 5em;
   font-size: 14px;
 }
+
+body.file-drop-hover #file-drop-screen {
+  display: block !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 20em;
+  text-align: center;
+  padding-top: 25%;
+}
