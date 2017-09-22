@@ -275,6 +275,17 @@
                 </label>
               </div>
               <div class="form-group">
+                <label for="group-sequences-by">Group sequences</label>
+                <select ng-model="app.groupBy"
+                        ng-options="tag.path as 'by ' + tag.name for tag in app.alignment.sequences.tags | orderBy: 'name'"
+                        ng-change="app.update()"
+                        ng-disabled="!app.alignment.sequences.tags.length"
+                        class="form-control"
+                        id="group-sequences-by">
+                  <option value="">all together</option>
+                </select>
+              </div>
+              <div class="form-group">
                 <label for="cpg-sites-label">Label CpG sites with</label>
                 <select ng-model="diagram.signals.siteLabelField"
                         ng-init="diagram.signals.siteLabelField = 'site'"
@@ -306,7 +317,6 @@
               alignment="app.alignment"
               order-by="heatmap.orderBy"
               group-by="heatmap.groupBy"
-              group-by-fields="heatmap.groupByFields"
               groups="heatmap.groups"
               site-label-field="diagram.signals.siteLabelField"
               site-label-offset="diagram.signals.siteLabelOffset">
@@ -329,12 +339,12 @@
             </div>
             <div class="panel-body">
               <div class="form-group">
-                <label for="group-sequences-by">Group sequences</label>
+                <label for="heatmap-group-sequences-by">Group sequences</label>
                 <select ng-model="heatmap.groupBy"
-                        ng-options="tag.path as 'by ' + tag.name for tag in heatmap.groupByFields | orderBy: 'name'"
-                        ng-disabled="!heatmap.groupByFields.length"
+                        ng-options="tag.path as 'by ' + tag.name for tag in app.alignment.sequences.tags | orderBy: 'name'"
+                        ng-disabled="!app.alignment.sequences.tags.length"
                         class="form-control"
-                        id="group-sequences-by">
+                        id="heatmap-group-sequences-by">
                   <option value="">all together</option>
                 </select>
               </div>

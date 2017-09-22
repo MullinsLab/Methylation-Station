@@ -20,6 +20,19 @@
 
     this._calculateStats();
 
+    this.sequences.tags =
+      dl.unique(
+        this.sequences
+          .map(dl.accessor("tags"))
+          .map(Object.keys)
+          .reduce(function(a,b){ return a.concat(b) })
+      ).map(function(d){
+        return {
+          name: d,
+          path: "tags." + d
+        }
+      });
+
     return this;
   }
 

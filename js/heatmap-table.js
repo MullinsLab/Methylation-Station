@@ -24,7 +24,6 @@
       scope: {
         alignment: '<',
         groupBy: '=?',
-        groupByFields: '=?',
         groups: '=?',
         orderBy: '=?',
         siteLabelField: '<?',
@@ -51,25 +50,6 @@
     // reaggregrate the methylation data.
     function update() {
       this.groups = summarize(this.alignment, this.groupBy);
-
-      // Roll up the set of tags available on sequences in this alignment,
-      // which are the keys we can group on
-      if (this.alignment) {
-        this.groupByFields =
-          dl.unique(
-            this.alignment.sequences
-              .map(dl.accessor("tags"))
-              .map(Object.keys)
-              .reduce(function(a,b){ return a.concat(b) })
-          ).map(function(d){
-            return {
-              name: d,
-              path: "sequence.tags." + d
-            }
-          });
-      } else {
-        this.groupByFields = [];
-      }
     }
 
     $scope.$watchCollection(
@@ -89,10 +69,10 @@
 
       $log.debug("Building heatmap data, grouped by: ", groupBy);
 
-      // Group by given field (tissue, patient, sample, culture, etc) or just
-      // lump everything together.
+      // Group _sites_ by given _sequence_ field (tissue, patient, sample,
+      // culture, etc) or just lump everything together.
       var groupByAccessor = groupBy
-        ? dl.accessor(groupBy)
+        ? dl.accessor("sequence." + groupBy)
         : function(){ return "All sequences" };
 
       // Only reference sites are interesting to return since novel sites

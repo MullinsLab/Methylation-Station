@@ -74,6 +74,15 @@
           data = data.filter(function(d){ return d.status !== 'mixed' });
       }
 
+      // Apply sequencing grouping
+      var groupByAccessor = this.groupBy
+        ? dl.accessor(this.groupBy)
+        : () => { return 'All sequences' };
+
+      this.alignment.sequences.forEach((sequence) => {
+        sequence.group = groupByAccessor(sequence) + "";
+      });
+
       // Sort - Note that the underlying array of sequences is modified
       // in-place, as sorting should affect the spreadsheet output as well.
       var sortKey = this.sortByMethylation
@@ -84,7 +93,8 @@
         .sort(function(a,b) {
           if (a.isReference) return -1;
           if (b.isReference) return 1;
-          return sortKey(a) - sortKey(b)
+          return dl.cmp(a.group, b.group)
+              || sortKey(a) - sortKey(b)
               || a.index - b.index;
         })
         .forEach(function(sequence, index) {

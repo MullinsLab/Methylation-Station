@@ -103,6 +103,67 @@ var MethylationDiagramSpec = {
       "transform": [
         { "type": "filter", "test": "!datum.sequence.isReference" }
       ]
+    },
+
+    // Group/facet sequences by their grouping field
+    {
+      "name": "sequencesByGroup",
+      "source": "sequences",
+      "transform": [
+        // Vega can't usefully group by a nested field, so we copy the group key
+        // into the root object.
+        { "type": "formula", "field": "sequenceGroup", "expr": "datum.sequence.group" },
+
+        // Calculate a global sequence display order (rank) which preserves the
+        // original desired display order within each group while ordering
+        // groups themselves by value.
+        { "type": "sort", "by": ["sequenceGroup", "displayIndex"] },
+        { "type": "rank" },
+
+        // Facet sequences by their group value
+        {
+          "type": "facet",
+          "groupby": "sequenceGroup",
+
+          // Calculate the lowest sequence rank within each group, so we know
+          // where this group starts relative to all (ungrouped) sequences.
+          "summarize": [
+            { "ops": ["min"], "field": "rank", "as": ["firstSequenceRank"] }
+          ],
+
+          // Re-calculate individual sequence display indexes _within_ each
+          // group, preserving order, so every group's set of sequences starts
+          // at displayIndex = 0.  This makes the mark definitions simpler.
+          "transform": [
+            { "type": "rank", "by": "displayIndex" },
+            { "type": "formula", "field": "displayIndex", "expr": "datum.rank - 1" },
+
+            // Sort sequences so they render from bottom to top, so that that
+            // text above will overlap text below.  This is desired when a
+            // sequence name is highlighted and the font size increased such
+            // that minor overlap occurs.
+            //
+            // Previously this sort was in the sequenceName mark as an inline
+            // transform, but that triggered a data flow bug in Vega.  See
+            //
+            //    https://mullinslab.slack.com/archives/C0AEZ0Z9R/p1506106578000136
+            //
+            // for some conversation of that.  In any case, there's no harm in
+            // moving the sort up into the dataset itself.
+            { "type": "sort", "by": "-displayIndex" }
+          ]
+        },
+
+        // Finally, calculate a sparse displayIndex for the _group_ based on
+        // the number of sequences displayed before this group
+        // (firstSequenceRank - 1) and the number of groups before this one
+        // (rank - 1).  This gaps the calculated value by 1 between groups.
+        // Since the reference is displayed separately from these groups, our
+        // displayIndex should always start at 1, not 0, thus the leading
+        // constant.
+        { "type": "rank" },
+        { "type": "formula", "field": "displayIndex", "expr": "1 + (datum.firstSequenceRank - 1) + (datum.rank - 1)" },
+      ]
     }
   ],
 
@@ -165,74 +226,19 @@ var MethylationDiagramSpec = {
   ],
 
   "marks": [
-    // Draw sequence names on the right hand side
-    {
-      "name": "sequenceName",
-      "type": "text",
-      "from": {
-        "data": "sequences",
-        "transform": [
-          // Rendering the names from bottom to top means that text above will
-          // overlap text below.  This is desired when a sequence name is
-          // highlighted and the font size increased such that minor overlap
-          // occurs.
-          {"type": "sort", "by": "-displayIndex"},
-          {"type": "filter", "test": "!hideSequenceLabels"}
-        ]
-      },
-      "properties": {
-        "update": {
-          "text": {"field": "sequenceId"},
-          "fill": [
-            {"value": "blue", "test": "highlight === datum.sequenceId"},
-            {"value": "#888"}
-          ],
-          "align": {"value": "left"},
-          "fontSize": [
-            {"value": 13, "test": "highlight === datum.sequenceId"},
-            {"value": 11}
-          ],
-          "baseline": {"value": "middle"},
-          "x": {"field": {"group": "width"}, "offset": 10},
-          "y": {"field": "displayIndex", "mult": 10},
-          "dy": {"value": 2}
-        }
-      }
-    },
-
-    // Draw an axis line for each sequence representing it
-    {
-      "name": "sequenceAxis",
-      "type": "rule",
-      "from": {
-        "data": "sequences"
-      },
-      "properties": {
-        "update": {
-          "x": {"value": 0},
-          "x2": {"field": {"group": "width"}},
-          "y": {"field": "displayIndex", "mult": 10},
-          "stroke": [
-            {"value": "blue", "test": "highlight === datum.sequenceId"},
-            {"value": "#888"}
-          ]
-        }
-      }
-    },
-
     // Draw the reference name
     {
       "name": "referenceName",
       "type": "text",
       "from": {
-        "data": "reference",
-        "transform": [
-          {"type": "filter", "test": "!hideSequenceLabels"}
-        ]
+        "data": "reference"
       },
       "properties": {
         "update": {
-          "text": {"field": "sequenceId"},
+          "text": [
+            {"value": "", "test": "hideSequenceLabels"},
+            {"field": "sequenceId"}
+          ],
           "fill": {"value": "#888"},
           "align": {"value": "left"},
           "fontSize": {"value": 11},
@@ -264,41 +270,105 @@ var MethylationDiagramSpec = {
       }
     },
 
-    // For each sequence, plot each site.  This is a group mark which produces
-    // one group per sequence, with each group containing the marks for
-    // individual sites.
+    // Group mark for each group of sequences, spacing them out
     {
-      "name": "sequence",
+      "name": "sequenceGroup",
       "type": "group",
       "from": {
-        "data": "sequences"
+        "data": "sequencesByGroup"
       },
+
+      // Calculate vertical start position of each group.  The multiplier
+      // should match the one used for spacing out _sequences_ by displayIndex.
       "properties": {
         "update": {
           "x": {"value": 0},
-          "y": {"field": "displayIndex", "mult": 10}
+          "y": {"field": "displayIndex", "mult": 10},
+          "width": {"field": {"group": "width"}}
         }
       },
+
+      // Marks for each sequence within the sequence group
       "marks": [
+
+        // Draw sequence names on the right hand side
         {
-          "type": "symbol",
+          "name": "sequenceName",
+          "type": "text",
           "properties": {
             "update": {
-              "x": {"scale": "x", "field": "site"},
-              "y": {"value": 0},
+              "text": [
+                {"value": "", "test": "hideSequenceLabels"},
+                {"field": "sequenceId"}
+              ],
               "fill": [
-                {"field": "status", "scale": "highlight-fill", "test": "highlight === datum.sequenceId"},
-                {"field": "status", "scale": "fill"}
+                {"value": "blue", "test": "highlight === datum.sequenceId"},
+                {"value": "#888"}
               ],
-              "stroke": [
-                {"field": "status", "scale": "highlight-stroke", "test": "highlight === datum.sequenceId"},
-                {"field": "status", "scale": "stroke"}
+              "align": {"value": "left"},
+              "fontSize": [
+                {"value": 13, "test": "highlight === datum.sequenceId"},
+                {"value": 11}
               ],
-              "strokeWidth": {"field": "type", "scale": "stroke-width"},
-              "shape": {"value": "circle"},
-              "size": {"field": "status", "scale": "size"}
+              "baseline": {"value": "middle"},
+              "x": {"field": {"group": "width"}, "offset": 10},
+              "y": {"field": "displayIndex", "mult": 10},
+              "dy": {"value": 2}
             }
           }
+        },
+
+        // Draw an axis line for each sequence representing it
+        {
+          "name": "sequenceAxis",
+          "type": "rule",
+          "properties": {
+            "update": {
+              "x": {"value": 0},
+              "x2": {"field": {"group": "width"}},
+              "y": {"field": "displayIndex", "mult": 10},
+              "stroke": [
+                {"value": "blue", "test": "highlight === datum.sequenceId"},
+                {"value": "#888"}
+              ]
+            }
+          }
+        },
+
+        // For each sequence, plot each site.  This is a group mark which produces
+        // one group per sequence, with each group containing the marks for
+        // individual sites.
+        {
+          "name": "sequence",
+          "type": "group",
+          "properties": {
+            "update": {
+              "x": {"value": 0},
+              "y": {"field": "displayIndex", "mult": 10}
+            }
+          },
+          "marks": [
+            {
+              "type": "symbol",
+              "properties": {
+                "update": {
+                  "x": {"scale": "x", "field": "site"},
+                  "y": {"value": 0},
+                  "fill": [
+                    {"field": "status", "scale": "highlight-fill", "test": "highlight === datum.sequenceId"},
+                    {"field": "status", "scale": "fill"}
+                  ],
+                  "stroke": [
+                    {"field": "status", "scale": "highlight-stroke", "test": "highlight === datum.sequenceId"},
+                    {"field": "status", "scale": "stroke"}
+                  ],
+                  "strokeWidth": {"field": "type", "scale": "stroke-width"},
+                  "shape": {"value": "circle"},
+                  "size": {"field": "status", "scale": "size"}
+                }
+              }
+            }
+          ]
         }
       ]
     }
