@@ -49,7 +49,14 @@
     // Watch for alignment and grouping field to change.  When either does,
     // reaggregrate the methylation data.
     function update() {
-      this.groups = summarize(this.alignment, this.groupBy);
+      if (this.alignment) {
+        $log.debug("Building heatmap data, grouped by: ", this.groupBy);
+        var heatmap = this.alignment.heatmap(this.groupBy);
+        this.groups = heatmap.groups;
+      }
+      else {
+        this.groups = null;
+      }
     }
 
     $scope.$watchCollection(
@@ -58,79 +65,6 @@
     );
 
     update.call(this);  // Kick off the first update
-
-
-    // Summarize per-site methlyation levels across the alignment by optional
-    // grouping field.
-    //
-    function summarize(alignment, groupBy) {
-      if (!alignment)
-        return;
-
-      $log.debug("Building heatmap data, grouped by: ", groupBy);
-
-      // Group _sites_ by given _sequence_ field (tissue, patient, sample,
-      // culture, etc) or just lump everything together.
-      var groupByAccessor = groupBy
-        ? dl.accessor("sequence." + groupBy)
-        : function(){ return "All sequences" };
-
-      // Only reference sites are interesting to return since novel sites
-      // usually aren't shared across the alignment.
-      var referenceSites = alignment.reference.stats.CpG.sites;
-
-      // Collect all unique CpG sites in the alignment and rank them for
-      // ordinal numbering.  This is for fetching the overall alignment rank of
-      // individual reference sites.
-      var alignmentSiteRank = new Map(
-        dl.unique(
-            alignment.cpgSites
-              .map((s) => { return s.site })
-              .sort((a,b) => { return a - b })
-          )
-          .map((s,i) => { return [s, i + 1] })
-      );
-
-      var data = alignment.cpgSites
-        .filter(function(site){ return !site.sequence.isReference && site.isInReference });
-
-      // Build a nested structure first by the grouping field and then within
-      // each group, by site.  For each alignment site, the sequence sites are
-      // collapsed into counts.
-      return d3.nest()
-        .key(groupByAccessor)
-        .rollup(function(values) {
-          var valuesBySite =
-            d3.nest()
-              .key(dl.accessor("site"))
-              .map(values);
-
-          var sites = referenceSites.map(function(refSite, index) {
-            var site = {
-              key: refSite,
-              site: refSite,                         // Used in the UI for column headers
-              rank: alignmentSiteRank.get(refSite),  // …ditto
-              values: {
-                count:           (valuesBySite[refSite] || []).length,
-                methylatedCount: (valuesBySite[refSite] || [])
-                  .filter(function(d){ return d.status === "methylated" })
-                  .length
-              }
-            };
-
-            // For convenience in our template, pre-calculate this.
-            site.values.fractionMethylated = site.values.methylatedCount / site.values.count;
-
-            return site;
-          });
-
-          sites.sequenceCount   = dl.count.distinct(values, "sequence.id");
-          sites.meanMethylation = dl.mean(sites,
-            function(d){ return d.values.methylatedCount / d.values.count });
-          return sites;
-        })
-        .entries(data);
-    }
   }
 
 })();

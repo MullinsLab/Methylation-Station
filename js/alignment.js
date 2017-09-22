@@ -377,5 +377,12 @@
     return rows;
   };
 
+
+  // Construct a heatmap object for this alignment.
+  //
+  Alignment.prototype.heatmap = function(groupBy) {
+    return new AlignmentHeatmap(this, groupBy);
+  };
+
 })();
 // vim: set ts=2 sw=2 :
