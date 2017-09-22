@@ -1,0 +1,20 @@
+--- a/vega-2.6.5.js	2017-09-22 11:54:22.000000000 -0700
++++ b/vega-2.6.5.js	2017-09-22 11:05:06.000000000 -0700
+@@ -17297,7 +17297,7 @@
+   for (i=0, len=rem.length; i<len; ++i) {
+     item = (rem[i] === prev[i]) ? prev[i] :
+       keyf ? this._map[keyf(rem[i])] : rem[i];
+-    item.status = Status.EXIT;
++    if (item) item.status = Status.EXIT;
+   }
+ 
+   for(i=0, len=data.length; i<len; ++i) {
+@@ -17325,7 +17325,7 @@
+   for (i=0, len=rem.length; i<len; ++i) {
+     item = (rem[i] === prev[i]) ? prev[i] :
+       keyf ? this._map[key = keyf(rem[i])] : rem[i];
+-    if (item.status === Status.EXIT) {
++    if (item && item.status === Status.EXIT) {
+       item._dirty = true;
+       input.dirty.push(item);
+       next.push(item);
