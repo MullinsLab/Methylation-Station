@@ -207,7 +207,7 @@
               ng-init="diagram.signals = {}">
             </methylation-diagram>
             <figcaption ng-if="diagram.rendered" ng-cloak>
-              <p>
+              <p ng-show="!app.summarizeGroups">
                 Black circles
                   <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1">
                     <circle cx="5" cy="5" r="4" fill="#333" stroke="#333" stroke-width="1px" />
@@ -239,6 +239,23 @@
                     <circle cx="5" cy="5" r="2" fill="url(#half-filled-red) #fcc" stroke="red" stroke-width="0.8px" />
                   </svg>
                 are partially converted sites.
+              </p>
+              <p ng-show="app.summarizeGroups">
+                Methylation level for each reference CpG site is shown using
+                the following symbols, representing an evenly quantized scale
+                from always methylated to never methylated:
+
+                <svg height="10" width="60" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                  <circle cx="5"  cy="5" r="4" stroke="#333" stroke-width="1px" fill="#333" />
+                  <circle cx="15" cy="5" r="4" stroke="#333" stroke-width="1px" fill="url(#diagonal-stripe-5) #5c5c5c" />
+                  <circle cx="25" cy="5" r="4" stroke="#333" stroke-width="1px" fill="url(#diagonal-stripe-4) #858585" />
+                  <circle cx="35" cy="5" r="4" stroke="#333" stroke-width="1px" fill="url(#diagonal-stripe-3) #adadad" />
+                  <circle cx="45" cy="5" r="4" stroke="#333" stroke-width="1px" fill="url(#diagonal-stripe-2) #d6d6d6" />
+                  <circle cx="55" cy="5" r="4" stroke="#333" stroke-width="1px" fill="white" />
+                </svg>.
+
+                Non-reference (novel) CpG sites, mixed methylation (YpG) sites,
+                and failed conversions are not shown.
               </p>
               <p>
                 <span ng-switch="diagram.signals.siteLabelField">
@@ -274,21 +291,24 @@
               Diagram options
             </div>
             <div class="panel-body">
-              <div class="checkbox">
+              <div class="checkbox" ng-class="{ disabled: app.summarizeGroups }">
                 <label>
-                  <input type="checkbox" ng-model="app.filter.hideCpH" ng-change="app.update()">
+                  <input type="checkbox" ng-model="app.filter.hideCpH" ng-change="app.update()"
+                    ng-disabled="app.summarizeGroups">
                   Hide failed conversions
                 </label>
               </div>
-              <div class="checkbox">
+              <div class="checkbox" ng-class="{ disabled: app.summarizeGroups }">
                 <label>
-                  <input type="checkbox" ng-model="app.filter.hideNovelCpG" ng-change="app.update()">
+                  <input type="checkbox" ng-model="app.filter.hideNovelCpG" ng-change="app.update()"
+                    ng-disabled="app.summarizeGroups">
                   Hide non-reference CpG sites
                 </label>
               </div>
-              <div class="checkbox">
+              <div class="checkbox" ng-class="{ disabled: app.summarizeGroups }">
                 <label>
-                  <input type="checkbox" ng-model="app.filter.hideMixedSites" ng-change="app.update()">
+                  <input type="checkbox" ng-model="app.filter.hideMixedSites" ng-change="app.update()"
+                    ng-disabled="app.summarizeGroups">
                   Hide mixed methylation (YpG) sites
                 </label>
               </div>
@@ -314,6 +334,12 @@
                         id="group-sequences-by">
                   <option value="">all together</option>
                 </select>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="app.summarizeGroups" ng-change="app.update()">
+                  Summarize groups
+                </label>
               </div>
               <div class="form-group">
                 <label for="cpg-sites-label">Label CpG sites with</label>
@@ -445,6 +471,63 @@
         <stop offset="50%"  stop-color="red" />
         <stop offset="100%" stop-color="red" />
       </linearGradient>
+
+      <!--
+        Four diagonal stripe patterns of increasing darkness, each in
+        white/black and white/blue, adapted from the lovely patternfills
+        project <https://github.com/iros/patternfills>, made available under
+        the MIT license.
+      -->
+      <pattern id="diagonal-stripe-2" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='white'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='#333' stroke-width='2'/>
+      </pattern>
+      <pattern id="diagonal-stripe-3" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='white'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='#333' stroke-width='3'/>
+      </pattern>
+      <pattern id="diagonal-stripe-4" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='#333'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='white' stroke-width='3'/>
+      </pattern>
+      <pattern id="diagonal-stripe-5" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='#333'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='white' stroke-width='2'/>
+      </pattern>
+
+      <!-- Blue! -->
+      <pattern id="blue-diagonal-stripe-2" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='white'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='blue' stroke-width='2'/>
+      </pattern>
+      <pattern id="blue-diagonal-stripe-3" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='white'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='blue' stroke-width='3'/>
+      </pattern>
+      <pattern id="blue-diagonal-stripe-4" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='blue'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='white' stroke-width='3'/>
+      </pattern>
+      <pattern id="blue-diagonal-stripe-5" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="scale(0.33, 0.33)">
+        <rect width='10' height='10' fill='blue'/>
+        <path d='M-1,1 l2,-2
+                 M0,10 l10,-10
+                 M9,11 l2,-2' stroke='white' stroke-width='2'/>
+      </pattern>
     </defs>
   </svg>
 

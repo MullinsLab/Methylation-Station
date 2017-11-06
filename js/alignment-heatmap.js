@@ -16,12 +16,13 @@
       ? dl.accessor("sequence." + groupBy)
       : () => { return "All sequences" };
 
-    this.groups = this._calculate();
+    this.groups = this._groups();
+    this.sites  = this._sites();
 
     return this;
   }
 
-  AlignmentHeatmap.prototype._calculate = function() {
+  AlignmentHeatmap.prototype._groups = function() {
     // Only reference sites are interesting to return since novel sites
     // usually aren't shared across the alignment.
     var referenceSites = this.alignment.reference.stats.CpG.sites;
@@ -78,6 +79,55 @@
         return sites;
       })
       .entries(data);
+  };
+
+
+  // Turn the heatmap groups back into site records suitable for feeding to our
+  // alignment diagram component.
+  //
+  AlignmentHeatmap.prototype._sites = function() {
+    var sites = this.groups
+      .sort((a,b) => { dl.cmp(a.key, b.key) })
+      .map((group, index) => {
+        // A synthetic sequence record representing all the sequences in
+        // this group, shared by each site record in the group.
+        var sequence = {
+          id: group.key,
+          index: index + 1,   // 0 is the reference
+          isReference: false,
+          count: group.values.sequenceCount,
+          stats: {
+            CpG: {
+              percentMethylated: group.values.meanMethylation * 100
+            }
+          }
+        };
+
+        return group.values.map((site) => {
+          return {
+            sequence: sequence,
+            site: site.site,
+            type: "CpG",
+            status: (
+              site.values.methylatedCount === site.values.count ?   "methylated" :
+              site.values.methylatedCount   > 0                 ?        "mixed" :
+                                                                  "unmethylated"
+            ),
+            count:              site.values.count,
+            methylatedCount:    site.values.methylatedCount,
+            fractionMethylated: site.values.fractionMethylated
+          }
+        });
+      })
+      .reduce((a,b) => { return a.concat(b) });
+
+    // Add back in reference sites.  They don't need any summary fields.
+    sites = sites.concat(
+      this.alignment.cpgSites
+        .filter((site) => { return site.sequence.isReference })
+    );
+
+    return sites;
   };
 
 })();

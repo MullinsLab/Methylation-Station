@@ -68,7 +68,7 @@ var MethylationDiagramSpec = {
         {
           "type": "formula",
           "field": "_label",
-          "expr": "format('.0f', datum.sequence.stats.CpG.percentMethylated) + '% – ' + datum.sequence.id"
+          "expr": "format('.0f', datum.sequence.stats.CpG.percentMethylated) + '% – ' + datum.sequence.id + (datum.sequence.count ? ' (n=' + format(',d', datum.sequence.count) + ')' : '')"
         }
       ]
     },
@@ -201,10 +201,40 @@ var MethylationDiagramSpec = {
       "range": ["#333", "white", "url(#half-filled) #ccc", "red", "url(#half-filled-red) #fcc"]
     },
     {
+      "name": "gradient-fill",
+      "type": "quantize",
+      "domain": [0, 1],
+      "range": [
+        // Fallback solid colors generated with:
+        //   d3.range(0, 1, 1/5).concat(1).map(d3.interpolateRgb("white", "#333"))
+        "white",
+        "url(#diagonal-stripe-2) #d6d6d6",
+        "url(#diagonal-stripe-3) #adadad",
+        "url(#diagonal-stripe-4) #858585",
+        "url(#diagonal-stripe-5) #5c5c5c",
+        "#333"
+      ]
+    },
+    {
       "name": "highlight-fill",
       "type": "ordinal",
       "domain": ["methylated", "unmethylated", "mixed", "unconverted", "partial"],
       "range": ["blue", "white", "url(#half-filled-blue) #ccf", "red", "url(#half-filled-red) #fcc"]
+    },
+    {
+      "name": "highlight-gradient-fill",
+      "type": "quantize",
+      "domain": [0, 1],
+      "range": [
+        // Fallback solid colors generated with:
+        //   d3.range(0, 1, 1/5).concat(1).map(d3.interpolateRgb("white", "blue"))
+        "white",
+        "url(#blue-diagonal-stripe-2) #ccf",
+        "url(#blue-diagonal-stripe-3) #99f",
+        "url(#blue-diagonal-stripe-4) #66f",
+        "url(#blue-diagonal-stripe-5) #33f",
+        "blue"
+      ]
     },
     {
       "name": "stroke",
@@ -362,8 +392,10 @@ var MethylationDiagramSpec = {
                   "x": {"scale": "x", "field": "site"},
                   "y": {"value": 0},
                   "fill": [
-                    {"field": "status", "scale": "highlight-fill", "test": "highlight === datum.sequenceId"},
-                    {"field": "status", "scale": "fill"}
+                    { "field": "fractionMethylated", "scale": "highlight-gradient-fill", "test": "highlight === datum.sequenceId && datum.fractionMethylated != null && datum.type === 'CpG'" },
+                    { "field": "status",             "scale": "highlight-fill",          "test": "highlight === datum.sequenceId" },
+                    { "field": "fractionMethylated", "scale": "gradient-fill",           "test": "datum.fractionMethylated != null && datum.type === 'CpG'" },
+                    { "field": "status",             "scale": "fill" }
                   ],
                   "stroke": [
                     {"field": "status", "scale": "highlight-stroke", "test": "highlight === datum.sequenceId"},

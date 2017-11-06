@@ -60,6 +60,51 @@
       if (!this.alignment)
         return;
 
+      // Compute new sites
+      var sites = this.summarizeGroups
+        ? this.alignment.heatmap(this.groupBy).sites
+        : this.updateSites();
+
+
+      // Sort
+      var sortKey = this.sortByMethylation
+        ? dl.accessor('stats.CpG.percentMethylated')
+        : dl.accessor('index');
+
+      var sorter = function(a,b) {
+        if (a.isReference) return -1;
+        if (b.isReference) return 1;
+        return (a.group || b.group ? dl.cmp(a.group, b.group) : null)
+            || sortKey(a) - sortKey(b)
+            || a.index - b.index;
+      };
+
+      // Always sort the underlying array of sequences in-place, as sorting
+      // should affect the spreadsheet output as well.
+      this.alignment.sequences
+        .sort(sorter)
+        .forEach((sequence, index) => { sequence.displayIndex = index });
+
+      // Additionally, if we've synthesized sequence records for a group, sort
+      // those by the same fields as well.
+      if (this.summarizeGroups) {
+        let sequences = sites.map((d) => { return d.sequence });
+
+        d3.map(sequences, dl.accessor('id'))
+          .values()
+          .sort(sorter)
+          .forEach((sequence, index) => { sequence.displayIndex = index });
+      }
+
+
+      // Deep clone the data so
+      //   a) an Angular update is always forced by referential inequality
+      //      without needing deep equality, and
+      //   b) the visualization can't change the underlying data.
+      this.alignment.filteredSites = angular.copy(sites);
+    };
+
+    this.updateSites = function() {
       var data = this.alignment.analysisSites;
 
       // Filters
@@ -83,30 +128,9 @@
         sequence.group = groupByAccessor(sequence) + "";
       });
 
-      // Sort - Note that the underlying array of sequences is modified
-      // in-place, as sorting should affect the spreadsheet output as well.
-      var sortKey = this.sortByMethylation
-        ? dl.accessor('stats.CpG.percentMethylated')
-        : dl.accessor('index');
-
-      this.alignment.sequences
-        .sort(function(a,b) {
-          if (a.isReference) return -1;
-          if (b.isReference) return 1;
-          return dl.cmp(a.group, b.group)
-              || sortKey(a) - sortKey(b)
-              || a.index - b.index;
-        })
-        .forEach(function(sequence, index) {
-          sequence.displayIndex = index;
-        });
-
-      // Deep clone the data so
-      //   a) an Angular update is always forced by referential inequality
-      //      without needing deep equality, and
-      //   b) the visualization can't change the underlying data.
-      this.alignment.filteredSites = angular.copy(data);
+      return data;
     };
+
 
     // Watch for alignment contents to change.  When it does, parse the new
     // alignment and retabulate the methylation data.

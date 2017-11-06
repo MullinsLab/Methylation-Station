@@ -10,9 +10,9 @@
   // directive is a glue component bridging our Angular app with the Vega
   // runtime.
   //
-  directive.$inject = ['debounce', '$log'];
+  directive.$inject = ['debounce', '$timeout', '$log'];
 
-  function directive(debounce, $log) {
+  function directive(debounce, $timeout, $log) {
     return {
       restrict: 'E',
       replace: false,
@@ -62,6 +62,17 @@
               view.update();
 
               scope.rendered = !!data;
+
+              // Another hack around Vega's updating of dynamically-sized viz.
+              // In this case, the view sometimes needs to update once more on
+              // the next tick/browser repaint, in order for view's own
+              // internal width calculations to be correct for new data.  This
+              // can be manually triggered by hovering over one of the
+              // sequences in the viz.  Instead, just update the view again on
+              // the next tick (i.e. a timeout of zero).  Since we know nothing
+              // is changing in Angular's scope during our callback, avoid a
+              // scope digest with a falsey third param.
+              $timeout(() => { view.update() }, 0, false);
             }
 
             // If we have starting data, render it now.
