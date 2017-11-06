@@ -334,10 +334,16 @@
         </div>
         <div class="col col-sm-6 col-md-3">
           <div class="panel panel-default small options-panel">
-            <div class="panel-heading">
+            <div class="panel-heading" ng-click="heatmap.optionsHidden = !heatmap.optionsHidden">
               Heatmap options
+              <span class="pull-right">
+                <span class="glyphicon" ng-class="{
+                  'glyphicon-collapse-up':    heatmap.optionsHidden,
+                  'glyphicon-collapse-down': !heatmap.optionsHidden }"></span>
+                <span class="sr-only">Toggle options panel</span>
+              </span>
             </div>
-            <div class="panel-body">
+            <div class="panel-body" ng-hide="heatmap.optionsHidden">
               <div class="form-group">
                 <label for="heatmap-group-sequences-by">Group sequences</label>
                 <select ng-model="heatmap.groupBy"

@@ -15,7 +15,7 @@ body {
   display: none !important;
 }
 
-a[ng-click] {
+a[ng-click], .panel-heading[ng-click] {
   cursor: pointer;
 }
 
