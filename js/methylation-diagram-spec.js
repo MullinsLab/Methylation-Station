@@ -62,7 +62,14 @@ var MethylationDiagramSpec = {
 
         // We'll use displayIndex to display the sequences in a desired order,
         // if available, falling back to the original alignment order.
-        { "type": "formula", "field": "displayIndex", "expr": "datum.sequence.displayIndex || datum.sequence.index" }
+        { "type": "formula", "field": "displayIndex", "expr": "datum.sequence.displayIndex || datum.sequence.index" },
+
+        // Labels
+        {
+          "type": "formula",
+          "field": "_label",
+          "expr": "format('.0f', datum.sequence.stats.CpG.percentMethylated) + '% – ' + datum.sequence.id"
+        }
       ]
     },
 
@@ -299,7 +306,7 @@ var MethylationDiagramSpec = {
             "update": {
               "text": [
                 {"value": "", "test": "hideSequenceLabels"},
-                {"field": "sequenceId"}
+                {"field": "_label"}
               ],
               "fill": [
                 {"value": "blue", "test": "highlight === datum.sequenceId"},
