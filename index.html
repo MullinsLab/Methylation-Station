@@ -208,15 +208,39 @@
             </methylation-diagram>
             <figcaption ng-if="diagram.rendered" ng-cloak>
               <p>
-                Black circles are methylated CpG sites.  White circles are
-                unmethylated CpG sites.  Half-filled black circles are mixed
-                methylation sites (<tt>Y</tt> in the alignment).
+                Black circles
+                  <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <circle cx="5" cy="5" r="4" fill="#333" stroke="#333" stroke-width="1px" />
+                  </svg>
+                are methylated CpG sites.
+
+                White circles
+                  <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <circle cx="5" cy="5" r="4" fill="white" stroke="#333" stroke-width="1px" />
+                  </svg>
+                are unmethylated CpG sites.
+
+                Half-filled black circles
+                  <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <circle cx="5" cy="5" r="4" fill="url(#half-filled) #ccc" stroke="#333" stroke-width="1px" />
+                  </svg>
+                are mixed methylation sites (<tt>Y</tt> in the alignment).
+
                 <em ng-if="app.filter.hideNovelCpG">Non-reference (novel) CpG sites are not shown.</em>
 
-                Small red circles are bisulfite-conversion
-                failures<em ng-if="app.filter.hideCpH"> (currently hidden)</em>.
-                Half-filled red cirles are partially converted sites.
+                Small red circles
+                  <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <circle cx="5" cy="5" r="2" fill="red" stroke="red" stroke-width="0.8px" />
+                  </svg>
+                are bisulfite-conversion failures<em ng-if="app.filter.hideCpH"> (currently hidden)</em>.
 
+                Half-filled red cirles
+                  <svg height="10" width="10" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <circle cx="5" cy="5" r="2" fill="url(#half-filled-red) #fcc" stroke="red" stroke-width="0.8px" />
+                  </svg>
+                are partially converted sites.
+              </p>
+              <p>
                 <span ng-switch="diagram.signals.siteLabelField">
                   <span ng-switch-when="site">
                     Site locations refer to alignment base positions<em
