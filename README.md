@@ -1,6 +1,7 @@
 # Methylation Station
 
-This application is for analyzing and visualizing DNA methylation data.
+This application is for analyzing and visualizing DNA methylation data.  You
+can [try it out on our website][try it].
 
 It is built for client-side JavaScript in a web browser.  Data is never
 uploaded anywhere, just selected by the user and read from the local disk.
@@ -18,6 +19,7 @@ drawing.
 
 
 
+[try it]: https://indra.mullins.microbiol.washington.edu/methylation-station/
 [AngularJS]: https://angularjs.org
 [D3]: https://github.com/d3/d3-3.x-api-reference/blob/master/API-Reference.md
 [Vega]: https://github.com/vega/vega/wiki/Documentation
