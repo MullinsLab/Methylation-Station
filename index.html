@@ -36,7 +36,7 @@
               </label>
 
               <div class="actions">
-                <a class="btn btn-success" target="_blank"
+                <a class="btn btn-success"
                   download="{{ app.alignment.name }}.svg"
                   ng-click="$event.target.href = !diagram.rendered ? '' : diagram.toURL()"
                   ng-disabled="!diagram.rendered">
@@ -44,7 +44,7 @@
                   Export diagram as SVG
                 </a>
 
-                <a class="btn btn-success" target="_blank"
+                <a class="btn btn-success"
                   download="{{ app.alignment.name }}.csv"
                   ng-click="$event.target.href = !app.alignment.cpgSites ? '' : app.tableToURL()"
                   ng-disabled="!app.alignment.cpgSites">
@@ -52,7 +52,7 @@
                   Export summary spreadsheet
                 </a>
 
-                <a class="btn btn-success" target="_blank"
+                <a class="btn btn-success"
                   download="{{ app.alignment.name }}.csv"
                   ng-click="$event.target.href = !app.alignment.analysisSites ? '' : app.dataToURL()"
                   ng-disabled="!app.alignment.analysisSites">
