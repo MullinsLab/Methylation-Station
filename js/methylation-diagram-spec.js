@@ -206,12 +206,11 @@ var MethylationDiagramSpec = {
       "domain": [0, 1],
       "range": [
         // Fallback solid colors generated with:
-        //   d3.range(0, 1, 1/5).concat(1).map(d3.interpolateRgb("white", "#333"))
+        //   d3.range(0, 1, 1/4).concat(1).map(d3.interpolateRgb("white", "#333"))
         "white",
-        "url(#diagonal-stripe-2) #d6d6d6",
-        "url(#diagonal-stripe-3) #adadad",
-        "url(#diagonal-stripe-4) #858585",
-        "url(#diagonal-stripe-5) #5c5c5c",
+        "url(#diagonal-stripe-2) #ccc",
+        "url(#diagonal-stripe-4) #999",
+        "url(#diagonal-stripe-5) #666",
         "#333"
       ]
     },
@@ -227,12 +226,11 @@ var MethylationDiagramSpec = {
       "domain": [0, 1],
       "range": [
         // Fallback solid colors generated with:
-        //   d3.range(0, 1, 1/5).concat(1).map(d3.interpolateRgb("white", "blue"))
+        //   d3.range(0, 1, 1/4).concat(1).map(d3.interpolateRgb("white", "blue"))
         "white",
-        "url(#blue-diagonal-stripe-2) #ccf",
-        "url(#blue-diagonal-stripe-3) #99f",
-        "url(#blue-diagonal-stripe-4) #66f",
-        "url(#blue-diagonal-stripe-5) #33f",
+        "url(#blue-diagonal-stripe-2) #bfbfff",
+        "url(#blue-diagonal-stripe-4) #8080ff",
+        "url(#blue-diagonal-stripe-5) #4040ff",
         "blue"
       ]
     },
