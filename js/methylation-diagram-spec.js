@@ -205,13 +205,11 @@ var MethylationDiagramSpec = {
       "type": "quantize",
       "domain": [0, 1],
       "range": [
-        // Fallback solid colors generated with:
-        //   d3.range(0, 1, 1/4).concat(1).map(d3.interpolateRgb("white", "#333"))
         "white",
-        "url(#diagonal-stripe-2) #ccc",
-        "url(#diagonal-stripe-4) #999",
-        "url(#diagonal-stripe-5) #666",
-        "#333"
+        "#ffffcc",
+        "#a1dab4",
+        "#41b6c4",
+        "#225ea8"
       ]
     },
     {
